@@ -1,0 +1,7 @@
+entity(var:starter, [prov:type='u2p:RequestMessage'])
+entity(var:input, [prov:value='var:inputValue',prov:type='var:inputType'])
+agent(var:lifeline, [])
+activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ,prov:type='exe:jButton1ActionPerformed'	])
+wasStartedBy(var:operation,   var:starter, - ,- )   
+hadMember(var:starter,var:input)
+wasAssociatedWith(var:operation, var:lifeline, - )

@@ -1,0 +1,10 @@
+«IMPORT properties»
+
+«DEFINE main FOR properties::PropertiesDocument»
+    «FILE "pp.properties"» 	«EXPAND propTemplate FOREACH this.properties» «ENDFILE»»
+«ENDDEFINE»
+
+
+«DEFINE propTemplate FOR properties::Property» 	
+«this.name»=«this.value» 
+«ENDDEFINE»

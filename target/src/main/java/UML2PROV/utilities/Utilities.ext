@@ -1,0 +1,19 @@
+String generateStateManager() : 		JAVA UML2PROV.utilities.AspectConstructor.generateStateManager();
+String generateUML2PROVTreeMap() : 		JAVA UML2PROV.utilities.AspectConstructor.generateUML2PROVTreeMap();
+String generateUUID() : 				JAVA UML2PROV.utilities.AspectConstructor.generateUUID();
+
+String generateBGMEvent() : 			JAVA UML2PROV.utilities.AspectConstructor.generateBGMEvent();
+String generateEventHelper() : 			JAVA UML2PROV.utilities.AspectConstructor.generateEventHelper();
+
+
+String generateBGMListener() : 			JAVA UML2PROV.utilities.AspectConstructor.generateBGMListener();
+String generateListenerPROVN() : 		JAVA UML2PROV.utilities.AspectConstructor.generateListenerPROVN();
+
+String codeVariablesDeclarationAJ() : 	JAVA UML2PROV.utilities.AspectConstructor.codeVariablesDeclarationAJ();
+String codeMethodsDeclarationAJ() : 	JAVA UML2PROV.utilities.AspectConstructor.codeMethodsDeclarationAJ();
+
+
+String codeInsideBefore() : 			JAVA UML2PROV.utilities.AspectConstructor.codeInsideBefore();
+String codeInsideAfter() : 		    	JAVA UML2PROV.utilities.AspectConstructor.codeInsideAfter();
+String codeInsideAround() : 			JAVA UML2PROV.utilities.AspectConstructor.codeInsideAround();
+

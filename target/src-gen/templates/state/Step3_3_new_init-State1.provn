@@ -1,0 +1,7 @@
+entity(var:objectSMD, [prov:type='u2p:StateMachine'])
+entity(var:target, [prov:type='exe:Step3_3',u2p:state='var:targetState'])
+agent(var:object, [])
+activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ,prov:type='exe:Step3_3'	])
+wasGeneratedBy(var:target,var:operation,- )
+specializationOf(var:target, var:objectSMD)
+wasAttributedTo(var:objectSMD, var:object )

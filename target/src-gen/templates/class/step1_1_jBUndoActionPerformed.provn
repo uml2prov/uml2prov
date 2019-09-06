@@ -1,0 +1,5 @@
+entity(var:source, [prov:type='exe:Object',prov:type='exe:step1_1',prov:type='prov:Collection'])
+entity(var:input, [prov:value='var:inputValue'])
+activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ])
+used(var:operation, var:source,- , [])
+used(var:operation, var:input,- , [])

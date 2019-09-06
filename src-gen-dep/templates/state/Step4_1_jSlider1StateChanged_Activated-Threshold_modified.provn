@@ -1,0 +1,50 @@
+
+			document
+				prefix prov <http://www.w3.org/ns/prov#>
+				prefix tmpl <http://openprovenance.org/tmpl#>
+				prefix var <http://openprovenance.org/var#>
+				prefix exe <http://example.org/>
+				prefix u2p <http://uml2prov.org/>
+				
+				bundle exe:bundle1
+					
+						entity(var:objectSMD ,[prov:type='u2p:StateMachine'])      
+					
+						entity(var:source ,[prov:type='exe:Step4_1',u2p:state='var:sourceState'])      
+					
+						entity(var:target ,[prov:type='exe:Step4_1',u2p:state='var:targetState'])      
+					
+					
+						activity(var:operation  ,[tmpl:startTime='var:operationStartTime', 
+								tmpl:endTime='var:operationEndTime' ,	 prov:type='exe:jSlider1StateChanged' ])      
+					
+					
+						agent(var:object  ,[])      
+					
+					
+						wasGeneratedBy(var:target,var:operation,- )      
+					
+					
+						used(var:operation,var:source,-  ,[])     
+					
+					
+						wasInvalidatedBy(var:source, var:operation, - )      
+					
+					
+						wasDerivedFrom(var:target, var:source  ,[])   
+					
+					
+					
+						specializationOf(var:source, var:objectSMD)      
+					
+						specializationOf(var:target, var:objectSMD)      
+					
+					
+						wasAttributedTo(var:objectSMD, var:object )      
+					
+					
+					
+					
+				endBundle
+				endDocument
+	

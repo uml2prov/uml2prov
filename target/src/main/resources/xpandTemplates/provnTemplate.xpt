@@ -1,0 +1,135 @@
+«IMPORT prov»
+
+
+«DEFINE main FOR prov::DocumentRoot»
+		«EXPAND documentTemplate FOREACH document»
+«ENDDEFINE»
+
+«DEFINE documentTemplate FOR Document»
+    «FILE id+ ".provn"»
+			document
+				prefix prov <http://www.w3.org/ns/prov#>
+				prefix tmpl <http://openprovenance.org/tmpl#>
+				prefix var <http://openprovenance.org/var#>
+				prefix exe <http://example.org/>
+				prefix u2p <http://uml2prov.org/>
+				
+				bundle exe:bundle1
+					«EXPAND entityTemplate FOREACH entity»
+					«EXPAND activityTemplate FOREACH activity»
+					«EXPAND agentTemplate FOREACH agent»
+					«EXPAND wgbTemplate FOREACH wasGeneratedBy»
+					«EXPAND usedTemplate FOREACH used»
+					«EXPAND wibTemplate FOREACH wasInvalidatedBy»
+					«EXPAND wdfTemplate FOREACH wasDerivedFrom»
+					«EXPAND hmTemplate FOREACH hadMember»
+					«EXPAND spOTemplate FOREACH specializationOf»
+					«EXPAND watTemplate FOREACH wasAttributedTo»
+					«EXPAND wawTemplate FOREACH wasAssociatedWith»
+					«EXPAND wInfByTemplate FOREACH wasInformedBy»
+					«EXPAND wStartedByTemplate FOREACH wasStartedBy»
+				endBundle
+				endDocument
+	«ENDFILE»»
+«ENDDEFINE»
+					«DEFINE entityTemplate FOR Entity»
+						entity(«this.id» «EXPAND entityAttributeTemplate FOR this»)      
+					«ENDDEFINE»
+				
+					«DEFINE agentTemplate FOR Agent»
+						agent(«this.id» «EXPAND agentAttributeTemplate FOR this»)      
+					«ENDDEFINE»
+					
+					«DEFINE activityTemplate FOR Activity»
+						activity(«this.id» «EXPAND activityAttributeTemplate FOR this»)      
+					«ENDDEFINE»
+					
+					«DEFINE wStartedByTemplate FOR Start»
+						wasStartedBy(«activity.ref», «IF starter==null»-«ENDIF» «IF starter!=null» «starter.ref»«ENDIF», «IF trigger==null»-«ENDIF» «IF trigger!=null» «trigger.ref»«ENDIF»,- «IF !this.anyAttribute.isEmpty»«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»)   
+					«ENDDEFINE»
+
+					«DEFINE wgbTemplate FOR Generation»
+						wasGeneratedBy(«entity.ref»,«activity.ref»,- «IF !this.anyAttribute.isEmpty»«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»)      
+					«ENDDEFINE»
+					
+					«DEFINE usedTemplate FOR Usage»
+						used(«activity.ref»,«entity.ref»,- «EXPAND usageAttributeTemplate FOR this»)     
+					«ENDDEFINE»
+					
+					«DEFINE wInfByTemplate FOR Communication»
+						wasInformedBy(«informed.ref», «informant.ref»«IF !this.anyAttribute.isEmpty», «EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»)      
+					«ENDDEFINE»
+					
+					«DEFINE wibTemplate FOR Invalidation»
+						wasInvalidatedBy(«entity.ref», «activity.ref», - «IF !this.anyAttribute.isEmpty»«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»)      
+					«ENDDEFINE»
+					
+					«DEFINE wdfTemplate FOR Derivation»
+						wasDerivedFrom(«this.generatedEntity.ref», «this.usedEntity.ref» «EXPAND derivationAttributeTemplate FOR this»)   
+					«ENDDEFINE»
+					
+					«DEFINE hmTemplate FOR Membership»
+						«FOREACH this.entity AS e»
+							hadMember(«collection.ref»,«e.ref» )      
+						«ENDFOREACH»
+					«ENDDEFINE»	
+					
+					«DEFINE spOTemplate FOR Specialization»
+						specializationOf(«this.specificEntity.ref», «this.generalEntity.ref»)      
+					«ENDDEFINE»			
+					
+					«DEFINE watTemplate FOR Attribution»
+						wasAttributedTo(«entity.ref», «agent.ref» «IF !this.anyAttribute.isEmpty»«EXPAND watAttributes FOR this»«ENDIF»)      
+					«ENDDEFINE»
+					
+					«DEFINE wawTemplate FOR Association»
+						wasAssociatedWith(«activity.ref», «agent.ref», - «IF !this.anyAttribute.isEmpty»«EXPAND wawAttributes FOR this»«ENDIF»)      
+					«ENDDEFINE»
+					
+					«DEFINE entityAttributeTemplate FOR Entity»,[«IF this.value!=null»prov:value='«this.value.toString()»'«IF !this.type.isEmpty»,«ENDIF»«ENDIF»«IF !this.type.isEmpty»«FOREACH this.type AS ty»prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH»«IF !this.anyAttribute.isEmpty»,«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»«ENDIF»]«ENDDEFINE»
+					
+					«DEFINE agentAttributeTemplate FOR Agent» ,[«IF !this.type.isEmpty»«FOREACH this.type AS ty»prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH»«IF !this.anyAttribute.isEmpty»,«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»«ENDIF»]«ENDDEFINE»
+
+					«DEFINE activityAttributeTemplate FOR Activity» ,[tmpl:startTime='«this.id»StartTime', 
+								tmpl:endTime='«this.id»EndTime' «IF !this.type.isEmpty || !this.anyAttribute.isEmpty »,«ENDIF»«IF !this.type.isEmpty»	«FOREACH this.type AS ty» prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH» «IF !this.anyAttribute.isEmpty»,«ENDIF»«ENDIF»«IF !this.anyAttribute.isEmpty»	«FOREACH this.anyAttribute AS attr»«attr.key»='«attr.value»'«IF attr != this.anyAttribute.last()»,«ENDIF»«ENDFOREACH»«ENDIF»]«ENDDEFINE»
+										
+					«DEFINE usageAttributeTemplate FOR Usage» ,[«IF this.type!=null»«FOREACH this.type AS ty» prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH»«IF !this.anyAttribute.isEmpty»,«ENDIF»«ENDIF»«IF !this.anyAttribute.isEmpty»«FOREACH this.anyAttribute AS attr»«attr.key»='«attr.value»'«IF attr != this.anyAttribute.last()»,«ENDIF»«ENDFOREACH»«ENDIF»]«ENDDEFINE»		
+					«DEFINE derivationAttributeTemplate FOR Derivation» ,[«IF this.type!=null»«FOREACH this.type AS ty» prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH»«IF !this.anyAttribute.isEmpty»,«ENDIF»«ENDIF»«IF !this.anyAttribute.isEmpty»«FOREACH this.anyAttribute AS attr»«attr.key»='«attr.value»'«IF attr != this.anyAttribute.last()»,«ENDIF»«ENDFOREACH»«ENDIF»]«ENDDEFINE»
+					«DEFINE attributeTemplate FOR List[PAttribute]»«FOREACH this AS attr»«attr.key»='«attr.value»'«IF attr != this.last()»,«ENDIF»«ENDFOREACH»«ENDDEFINE»
+					«DEFINE watAttributes FOR Attribution» ,[«IF !this.type.isEmpty»«FOREACH this.type AS ty»prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH»«IF !this.anyAttribute.isEmpty»,«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»«ENDIF»]«ENDDEFINE»
+					«DEFINE wawAttributes FOR Association» ,[«IF !this.type.isEmpty»«FOREACH this.type AS ty»prov:type='«ty.toString()»'«IF ty != this.type.last()»,«ENDIF»«ENDFOREACH»«IF !this.anyAttribute.isEmpty»,«EXPAND attributeTemplate FOR this.anyAttribute»«ENDIF»«ENDIF»]«ENDDEFINE»
+
+«REM»
+
+document
+prefix prov <http://www.w3.org/ns/prov#>
+prefix tmpl <http://openprovenance.org/tmpl#>
+prefix var <http://openprovenance.org/var#>
+prefix exe <http://example.org/>
+prefix u2p <http://uml2prov.org/>
+
+bundle exe:bundle1
+
+		entity(var:input0, [prov:value = 'var:input0value'])      
+		used(var:message, var:input0, -, [prov:role='u2p:pow_result	'])
+	
+		entity(var:input1, [prov:value = 'var:input1value'])      
+		used(var:message, var:input1, -, [prov:role='u2p:num	'])
+	
+		activity(var:message, [prov:type = 'u2p:division', tmpl:startTime = 'var:messageStartTime', tmpl:endTime ='var:messageEndTime' ])
+		agent(var:lifeline, [prov:type='u2p:'])
+
+		wasAssociatedWith(var:message, var:lifeline, - , [])
+
+		entity(var:output0, [prov:value = 'var:output0value'])             
+		wasGeneratedBy(var:output0, var:message, -, [prov:role='u2p:division_result'])	
+		
+		wasDerivedFrom(var:output0, var:input0)
+			
+		wasDerivedFrom(var:output0, var:input1)
+					
+endBundle
+endDocument
+
+«ENDREM»
+

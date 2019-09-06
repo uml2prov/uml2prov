@@ -1,0 +1,798 @@
+
+
+«IMPORT properties»
+
+«DEFINE propTemplate FOR properties::Property-» 	
+	«IF this.value.trim().compareTo("")!=0-»
+		«this.name»=«this.value» 
+	«ENDIF-»
+«ENDDEFINE-»
+
+
+«DEFINE main FOR properties::Document»
+	«EXPAND propDocumentTemplate FOREACH this.propertiesDocument» 
+«ENDDEFINE»
+
+«DEFINE propDocumentTemplate FOR properties::PropertiesDocument» 	
+	
+		«IF this.name.compareTo('out_properties.xml')==0»
+		    «FILE 'pp.properties'» 
+		    	«EXPAND propTemplate FOREACH this.properties» 
+		    «ENDFILE»
+		«ENDIF»
+
+		«IF this.name.compareTo('provenanceExtractor')==0»
+		    «FILE 'aspects/provenanceExtractor.aj'» 
+package aspects;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.AbstractCollection;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.log4j.Logger;
+import org.aspectj.lang.reflect.MethodSignature;
+
+import com.mongodb.BasicDBObject;
+
+
+public aspect provenanceExtractor{
+	
+	
+	pointcut captureNews():	«FOREACH this.properties AS prop-» «IF prop.name.compareTo("CLASS")==0-»	initialization(«prop.value».new(..))«IF prop!=this.properties.last()-»||«ENDIF-»«ENDIF-» «ENDFOREACH-»;
+
+	pointcut captureMethods() : «FOREACH this.properties AS prop-» «IF prop.name.compareTo("OPERATION")==0-»call(* «prop.value»(..))«IF prop!=this.properties.last()-»||«ENDIF-»«ENDIF-» «ENDFOREACH-»;
+
+	
+	private static final String EXECUTION_ID;
+	private static Logger LOGGER = null; 
+	
+	
+	// represents the deeper level of the last method executed
+	static Integer level = 0;
+	// it is a boolean which allows us to know if the level has ended
+	// realmente no se como llamarlo, es algo parecido a un semaforo que me dice
+	// si el nivel ha finalizado o no.
+	static Boolean previousMethod = false;
+	private static ArrayList<List<SimpleEntry<String, String>>> returnsArray;	
+	private static ArrayList<List<SimpleEntry<String, String>>> startersArray;
+	private static ArrayList<String> objIdArray = new ArrayList<String>();
+
+	private static HashMap<String, String> propertiesMemory;
+	
+	static{
+		 try {
+			 System.setProperty("Dlog4j2.contextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
+			 PropertyConfigurator.configure(new FileInputStream(new  File("src/aspects/log4j.properties")));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		EXECUTION_ID = IdentifiersManager.randomUUID();
+		LOGGER = Logger.getLogger("ProvenanceExtractor");
+		returnsArray = new ArrayList<List<SimpleEntry<String,String>>>();	
+		startersArray = new ArrayList<List<SimpleEntry<String, String>>>();
+		
+//		 final ScheduledExecutorService scheduler =    Executors.newScheduledThreadPool(1);
+//	     final Runnable task = new Runnable() {public void run() { 
+//	    	 if(!cacheBindings.isEmpty()){
+//	    		 System.out.println("adding to db...");
+//		    	 toDB(); 
+//	    	 }
+//	     }};
+//	     final ScheduledFuture<?> beeperHandle =	scheduler.scheduleWithFixedDelay(task,5,10,TimeUnit.SECONDS);
+
+		try {
+			Properties properties = new Properties();	
+			properties.load(new FileInputStream("templateDiagrams/pp.properties"));
+			propertiesMemory = new HashMap<String, String>();
+			for (Object key : properties.keySet()) {
+				propertiesMemory.put((String) key, properties.getProperty((String) key));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	long rawNew =0;
+	long provNew =0;
+	
+//	Stopwatch sw ;
+//	Stopwatch swAroun;
+	
+	
+	String id_msg_new = "";
+	
+	
+	before() : captureNews(){
+		System.out.println("INIT [level "+level+"]"+thisJoinPoint.getTarget().getClass().getSimpleName());
+		System.out.println(startersArray);
+
+		id_msg_new = "new-" + IdentifiersManager.randomUUID();
+		
+		String starter = this.beforeManagement(thisJoinPoint.getTarget(),thisJoinPoint.getTarget().getClass().getSimpleName(), id_msg_new);
+		provenance(EXECUTION_ID, thisJoinPoint.getTarget(), id_msg_new, "starter", starter);	
+		provenance(EXECUTION_ID, thisJoinPoint.getTarget(), id_msg_new, "operationStartTime" ,String.valueOf(new Date().getTime()));
+		
+	}
+	
+	
+	before(Identified c) : captureNews() && this(c){
+		c.uuid = new UUID(c);
+		String ID_MSG = IdentifiersManager.randomUUID();
+		
+		String starter = this.beforeManagement(c,thisJoinPoint.getTarget().getClass().getSimpleName(), ID_MSG);
+		provenance(EXECUTION_ID, thisJoinPoint.getTarget(), ID_MSG, "starter", starter);	
+		provenance(EXECUTION_ID, thisJoinPoint.getTarget(), id_msg_new, "operationStartTime" ,String.valueOf(new Date().getTime()));
+		System.out.println(startersArray);
+
+	}
+	
+	
+	after() : captureNews(){
+		try {
+		System.out.println("END [level "+level+"]"+thisJoinPoint.getTarget().getClass().getSimpleName());
+		System.out.println(startersArray);
+
+//			rawNew = sw.elapsedTime();
+			
+			Object target = null;
+			
+			if (thisJoinPoint.getTarget() != null) {
+				target = thisJoinPoint.getTarget();
+			} else if (thisJoinPoint.getThis() != null) {
+				target = thisJoinPoint.getThis();
+			}
+			
+			if (target != null) {
+				
+				provenance(EXECUTION_ID, thisJoinPoint.getTarget(), id_msg_new, "operationEndTime", String.valueOf(new Date().getTime()));
+
+
+				final String ID_MSG = id_msg_new;
+
+
+				// ------------------ target variable
+				provenance(EXECUTION_ID, target, ID_MSG, "target", IdentifiersManager.addObject(target));
+				// ------------------ target variable
+
+				
+				for (Object arg : thisJoinPoint.getArgs()) {
+					if (arg != null) {
+						if (arg instanceof AbstractCollection) {
+							((AbstractCollection<Object>) arg).parallelStream().filter(element -> element!=null).forEach(element -> {
+								provenance(EXECUTION_ID, thisJoinPoint.getTarget(), ID_MSG, "input",	IdentifiersManager.getIdentifier(element).getCompleteUUID());
+								provenanceValueType(EXECUTION_ID,IdentifiersManager.getIdentifier(element).getCompleteUUID(), "value",element.toString());
+								provenanceValueType(EXECUTION_ID,IdentifiersManager.getIdentifier(element).getCompleteUUID(), "type",element.getClass().getTypeName());
+							});
+						} else {
+							provenance(EXECUTION_ID, target, ID_MSG, "input",IdentifiersManager.getIdentifier(arg).getCompleteUUID());
+							provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(arg).getCompleteUUID(),"value", arg.toString());
+							provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(arg).getCompleteUUID(),"type", arg.getClass().getTypeName());
+						}
+					}
+				}
+				provenance(EXECUTION_ID, target, ID_MSG, "operation", ID_MSG);
+
+				
+				///associated with sequence
+				if (!previousMethod) {
+					List<SimpleEntry<String, String>> starterLevel = startersArray.get(level);
+					// ------------------ newRequest variable
+					for (int i = 0; i < starterLevel.size(); i++) {
+						provenance(EXECUTION_ID, target, ID_MSG, "newRequest", starterLevel.get(i).getValue());
+					}
+					// ------------------ newRequest variable
+				}
+				///end sequence
+
+				for (Field field : Arrays.asList(thisJoinPoint.getTarget().getClass().getDeclaredFields())) {
+					field.setAccessible(true);
+
+						if(field.get(thisJoinPoint.getTarget())!=null){
+							String fieldUUID;
+							fieldUUID = IdentifiersManager.getIdentifier(field.get(thisJoinPoint.getTarget())).getCompleteUUID();
+
+							String fieldValue = (field.get(thisJoinPoint.getTarget()) != null) ? field.get(thisJoinPoint.getTarget()).toString() : "Null";
+							String fieldType = (field.get(thisJoinPoint.getTarget()) != null) ? field.getType().getSimpleName()  : "Null";
+
+							provenance(EXECUTION_ID, thisJoinPoint.getTarget(), ID_MSG, "attribute", fieldUUID);
+							provenanceValueType(EXECUTION_ID, fieldUUID, "value", fieldValue);
+							provenanceValueType(EXECUTION_ID, fieldUUID, "type", fieldType);
+							provenanceValueType(EXECUTION_ID, fieldUUID, "attName", field.getName());
+
+						}
+
+					
+				}	
+				this.afterManagement(thisJoinPoint.getTarget(), thisJoinPoint.getTarget().getClass().getSimpleName() , ID_MSG, IdentifiersManager.randomUUID());
+
+			}
+			
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//			provNew = swAroun.elapsedTime();
+//			System.out.println("New: "+rawNew);
+//			System.out.println("PROV New: "+provNew);
+			
+//			System.out.println(provNew);
+			
+		}
+
+	@SuppressWarnings("unchecked")
+	private void provenanceBeforeExecution(Object target, Method method, Object[] args, String ID_MSG, String starter) {
+		try {
+			provenance(EXECUTION_ID, target, ID_MSG, "starter", starter);
+			provenance(EXECUTION_ID, target, ID_MSG, "operation", ID_MSG);
+			provenance(EXECUTION_ID, target, ID_MSG, "source",IdentifiersManager.getIdentifier(target).getCompleteUUID());
+
+			String fieldAdd = getAddAttribute(target, method);
+			if (fieldAdd.compareTo("") != 0) {
+				Object collectionAttribute;
+				collectionAttribute = target.getClass().getField(fieldAdd).get(target);
+				if (collectionAttribute instanceof AbstractCollection	&& !((AbstractCollection) collectionAttribute).isEmpty()) {
+					((AbstractCollection) collectionAttribute).parallelStream().forEach(object -> {
+						provenance(EXECUTION_ID, target, ID_MSG, "collElements",IdentifiersManager.getIdentifier(object).getCompleteUUID());
+					});
+				}
+			}
+
+			for (Object arg : args) {
+				if (arg != null) {
+					if (arg instanceof AbstractCollection) {
+						((AbstractCollection) arg).parallelStream().forEach(element -> {
+							provenance(EXECUTION_ID, target, ID_MSG, "input",IdentifiersManager.getIdentifier(element).getCompleteUUID());
+							provenanceValueType(EXECUTION_ID,IdentifiersManager.getIdentifier(element).getCompleteUUID(), "value",element.toString());
+							provenanceValueType(EXECUTION_ID,IdentifiersManager.getIdentifier(element).getCompleteUUID(), "type",element.getClass().getTypeName());
+						});
+					} else {
+						provenance(EXECUTION_ID, target, ID_MSG, "input",IdentifiersManager.getIdentifier(arg).getCompleteUUID());
+						provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(arg).getCompleteUUID(),"value", arg.toString());
+						provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(arg).getCompleteUUID(),"type", arg.getClass().getTypeName());
+					}
+				}
+			}
+
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	Object around() : captureMethods() {
+
+		
+		long proceedTime = -20;
+		long aroundTime = -20;
+		Stopwatch swProceed;
+		Stopwatch swAround;
+		
+		//init around timer
+		swAround = new Stopwatch();
+		 
+		 
+		final Method method = ((MethodSignature) thisJoinPoint.getSignature()).getMethod();
+		final String ID_MSG = method.getName() + "-" + IdentifiersManager.randomUUID();
+		
+		Object target = thisJoinPoint.getTarget();
+		
+		if (target != null) {
+			final String sourceID = IdentifiersManager.getIdentifier(target).getCompleteUUID();
+
+			String starter = this.beforeManagement(target, method.getName(), ID_MSG);
+			final Object targetAux= target;
+			
+			swAround = new Stopwatch();
+
+			provenanceBeforeExecution(targetAux, method, thisJoinPoint.getArgs(), ID_MSG, starter);
+
+			
+			
+			provenance(EXECUTION_ID, thisJoinPoint.getTarget(), ID_MSG, "operationStartTime" ,String.valueOf(new Date().getTime()));
+			
+			swProceed = new Stopwatch();
+			
+			System.out.println("INIT [level "+level+"]"+method.getName());
+			System.out.println(startersArray);
+
+			final Object rtn = proceed();
+			System.out.println("END [level "+level+"]"+method.getName());
+			System.out.println(startersArray);
+
+
+			proceedTime = swProceed.elapsedTime();
+			
+			provenance(EXECUTION_ID, thisJoinPoint.getTarget(), ID_MSG, "operationEndTime", String.valueOf(new Date().getTime()));
+
+
+
+			provenanceAfterExecution(targetAux, method, thisJoinPoint.getArgs(), ID_MSG, rtn, sourceID);
+
+
+
+			afterManagement(targetAux, method.getName(), ID_MSG, IdentifiersManager.randomUUID());
+
+			
+			aroundTime = swAround.elapsedTime();
+			System.out.println(target.getClass().getSimpleName()+"."+method.getName()+";"+proceedTime+";"+aroundTime);
+//			System.out.println(proceedTime+";"+aroundTime);
+
+			return rtn;
+		} else {
+			Object rtn = proceed();
+			return rtn;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void provenanceAfterExecution(Object target, Method method, Object []args, String ID_MSG, Object rtn, String sourceID) {
+		
+		UUID targetID = IdentifiersManager.getIdentifier(target);
+		try {	
+			
+			// ------------------ lifeline variable
+			final String lifelevelId = (level-1 >= 0) ? objIdArray.get(level-1) : "TheBigBang";
+			provenance(EXECUTION_ID, target, ID_MSG, "lifeline", lifelevelId);
+			// ------------------ lifeline variable
+			
+			
+			
+			// ------------------ object variable
+			provenance(EXECUTION_ID, target, ID_MSG, "object", targetID.getUUID());
+			provenance(EXECUTION_ID, target, ID_MSG, "objectSMD", targetID.getUUID()+"_0");
+			// ------------------ object variable
+
+		
+			
+			// ------------------ target variable
+			if(this.changeState(target, method) && targetID.getCompleteUUID().compareTo(sourceID)==0){
+				provenance(EXECUTION_ID, target, ID_MSG, "target", IdentifiersManager.incrementIdentifier(target));
+			}else{
+				provenance(EXECUTION_ID, target, ID_MSG, "target", targetID.getCompleteUUID());
+			}
+			// ------------------ target variable
+			
+
+			// ------------------ output variable
+			if (rtn != null){
+
+				// ------------------ MessageReply variable
+				provenance(EXECUTION_ID, target, ID_MSG, "messageReply", IdentifiersManager.randomUUID());
+				// ------------------ MessageReply variable
+				
+				
+				if(rtn instanceof AbstractCollection){
+					if (((AbstractCollection<Object>) rtn).isEmpty()){
+						String rtnUUID = IdentifiersManager.getIdentifier(rtn).getCompleteUUID();
+						provenance(EXECUTION_ID, target, ID_MSG, "output",rtnUUID);
+						provenanceValueType(EXECUTION_ID, rtnUUID, "value", "Empty");
+						provenanceValueType(EXECUTION_ID, rtnUUID, "type", rtn.getClass().getTypeName());
+					}else{
+						((AbstractCollection<Object>) rtn).parallelStream().forEach(object -> {
+							provenance(EXECUTION_ID, target, ID_MSG, "output",IdentifiersManager.getIdentifier(object).getCompleteUUID());
+							provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(object).getCompleteUUID(), "value", object.toString());
+							provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(object).getCompleteUUID(), "type", object.getClass().getTypeName());
+						});
+					}
+				}else{
+					provenance(EXECUTION_ID, target, ID_MSG, "output",IdentifiersManager.getIdentifier(rtn).getCompleteUUID());
+					provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(rtn).getCompleteUUID(), "value", rtn.toString());
+					provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(rtn).getCompleteUUID(), "type", rtn.getClass().getTypeName());
+				}
+			}
+//			else{
+//				System.out.println(method.getName());
+//				provenance(EXECUTION_ID, target, ID_MSG, "output",IdentifiersManager.getIdentifier(rtn).getCompleteUUID());
+//				provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(rtn).getCompleteUUID(), "value", "Null");
+//				provenanceValueType(EXECUTION_ID, IdentifiersManager.getIdentifier(rtn).getCompleteUUID(), "type", "Null");
+//			}
+			// ------------------ output variable
+			
+
+			if (!previousMethod) {
+				System.out.println(startersArray.get(level));
+				List<SimpleEntry<String, String>> starterLevel = startersArray.get(level);
+				// ------------------ newRequest variable
+				for (int i = 0; i < starterLevel.size(); i++) {
+					provenance(EXECUTION_ID, target, ID_MSG, "newRequest", starterLevel.get(i).getValue());
+				}
+				// ------------------ newRequest variable
+
+				
+				// ------------------ replyMessage variable
+				List<SimpleEntry<String, String>> returnLevel = returnsArray.get(level);
+				for (int i = 0; i < returnLevel.size(); i++) {
+					if(this.isInformedWithOutput(target, method, returnLevel.get(i).getKey().split("|")[0]) || this.isInformedWithNoOutput(target,method, returnLevel.get(i).getKey().split("|")[0])){
+						provenance(EXECUTION_ID, target, ID_MSG, "replyMessage", returnLevel.get(i).getValue());
+					}
+				}
+				// ------------------ replyMessage variable
+			}
+			
+			
+			Arrays.asList(target.getClass().getDeclaredFields()).parallelStream()
+					.forEach(field -> {
+						field.setAccessible(true);
+						String fieldStereotype = "none";
+						String fieldUUID;
+						try {
+							Object fieldTarget = field.get(target);
+									
+							fieldUUID = (fieldTarget!=null)?IdentifiersManager.getIdentifier(fieldTarget).getCompleteUUID():IdentifiersManager.randomUUID();
+							String fieldValue = (fieldTarget != null) ? field.get(target).toString() : "Null";
+							String fieldType = (fieldTarget != null) ? field.getType().getName() : "Null";
+							
+
+
+							if (this.getPropertyAttribute(target, method).compareTo("") != 0 && this.getPropertyAttribute(target, method).compareTo(field.getName()) == 0) {
+								fieldStereotype = "property";
+								provenance(EXECUTION_ID, target, ID_MSG, "targetAttribute", fieldUUID);
+							}
+							// new and old column /also attributes
+							else if (this.getAddAttribute(target, method).compareTo("") != 0 && this.getAddAttribute(target, method).compareTo(field.getName()) == 0) {
+								fieldStereotype = "add";
+								provenance(EXECUTION_ID, target, ID_MSG, "coll_new",IdentifiersManager.newUUID(fieldTarget).getCompleteUUID());
+							}
+							
+							// modify attribute
+							else if (this.getModifyAttribute(target, method).compareTo("") != 0 && this.getModifyAttribute(target, method).compareTo(field.getName()) == 0) {
+								fieldStereotype = "modify";
+								provenance(EXECUTION_ID, target, ID_MSG, "oldAttr",fieldUUID);
+								
+								String fieldUUID2= IdentifiersManager.incrementIdentifier(field.get(target));
+								fieldValue = (fieldTarget != null) ? field.get(target).toString() : "Null";
+								fieldType = (fieldTarget != null) ? field.getType().getName() : "Null";
+								
+								provenance(EXECUTION_ID, target, ID_MSG, "newAttr",fieldUUID2);
+								provenanceValueType(EXECUTION_ID, fieldUUID2, "value", fieldValue);
+								provenanceValueType(EXECUTION_ID, fieldUUID2, "type", fieldType);
+								provenanceValueType(EXECUTION_ID, fieldUUID2, "attName",field.getName());
+								
+							}
+							
+							// remove elements from a collection
+							else if (this.getRemoveAttribute(target, method).compareTo("") != 0 && this.getRemoveAttribute(target, method).compareTo(field.getName()) == 0) {
+								fieldStereotype = "remove";
+								provenance(EXECUTION_ID, target, ID_MSG, "coll_new",IdentifiersManager.newUUID(fieldTarget).getCompleteUUID());
+								Object collectionAttribute = target.getClass().getField(this.getRemoveAttribute(target, method)).get(target);
+								if (collectionAttribute instanceof AbstractCollection) {
+									((AbstractCollection) collectionAttribute).parallelStream().forEach(s -> {
+										provenance(EXECUTION_ID, target, ID_MSG, "collElements", fieldUUID);
+									});
+								}
+							}
+							// get identifier withoutmodifications
+							else {
+								if (changeState(target, method)) {
+									provenance(EXECUTION_ID, target, ID_MSG, "attribute", fieldUUID);
+									provenanceValueType(EXECUTION_ID, fieldUUID, "value", fieldValue);
+									provenanceValueType(EXECUTION_ID, fieldUUID, "type", fieldType);
+									provenanceValueType(EXECUTION_ID, fieldUUID, "attName",field.getName());
+								}
+							}
+						} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					});
+		} catch (IllegalArgumentException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private String beforeManagement(Object target, String method_name, String id_msg){
+		System.out.println("beforeManagement de" +method_name);
+
+		if (previousMethod) {
+			level++;
+		}
+		previousMethod = true;
+
+		if (returnsArray.size() <= level) {
+			returnsArray.add(level, new ArrayList<SimpleEntry<String, String>>());
+			startersArray.add(level, new ArrayList<SimpleEntry<String, String>>());
+			objIdArray.add(level,  IdentifiersManager.getIdentifier(target).getUUID());
+		}
+		
+		// ID of the entity which triggers this execution
+		String starter = IdentifiersManager.randomUUID();
+		
+		// Store this identifier in methodStarter
+		SimpleEntry<String, String> methodStarter = new SimpleEntry<String, String>(target.getClass().getSimpleName() + "." + method_name + "@" + id_msg, starter);
+		startersArray.get(level).add(methodStarter);
+		
+		return starter;
+	}
+	
+	
+	private void afterManagement(Object target, String method_name, String id_msg, String replyMessageID){
+		System.out.println("afterManagement de" +method_name);
+
+		/** Starting the end-block of managing hierarchical methods */
+		if(!previousMethod){
+			returnsArray.get(level).clear();
+			startersArray.get(level).clear();
+			if(level!=0) level--;
+		}
+		previousMethod = false;
+
+		// keeping track of the return objects
+		SimpleEntry<String, String> methodReturn = new SimpleEntry<String, String>(	target.getClass().getSimpleName() + "." + method_name + "@" + id_msg, replyMessageID);		
+		
+		returnsArray.get(level).add(methodReturn);
+		/** Ending of the end-block of managing hierarchical methods */
+	}
+	
+	private void provenance(String ID_EXECUTION, Object target, String ID_EXECUTION_METHOD, String variableName,String value) {
+		 BasicDBObject obj = new BasicDBObject();
+		
+		 obj.put("Execution_ID", EXECUTION_ID);
+		 obj.put("Class", (target.getClass().getSimpleName()));
+		 obj.put("Execution_ID", (EXECUTION_ID));
+		 obj.put("Execution_ID_METHOD", (ID_EXECUTION_METHOD));
+		 obj.put("VARIABLE", (variableName));
+		 obj.put("VALUE", (value));
+//		 System.out.println(obj.toString().replace(".", "").replace("\"", "'"));
+//		 cacheBindings.add(obj);
+		 LOGGER.debug(obj.toString().replace(".", "").replace("\"", "'"));
+	}
+	
+	private void provenanceValueType(String ID_EXECUTION, String Identifier, String type, String value) {
+		 BasicDBObject obj = new BasicDBObject();
+		
+		 obj.put("Execution_ID", EXECUTION_ID);
+		 obj.put("Identifier", Identifier);
+		 obj.put("type", type);
+		 obj.put("VALUE", (value));
+//		 System.out.println(obj.toString().replace(".", "").replace("\"", "'"));
+		 LOGGER.debug(obj.toString().replace(".", "").replace("\"", "'"));
+	}
+	
+	private static void toDB(){
+		cacheBindings.parallelStream().forEach(basicDBObject->{
+			LOGGER.debug(basicDBObject.toString().replace("\"", "'"));
+		});
+		cacheBindings.clear();
+	}
+	
+	
+	private Boolean isRelevant(Object target, Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName() + "." +m.getName() + ".relevant");
+		return (change != null && change.trim().compareTo("true") == 0) ? true : false; 
+	}
+	
+	private Boolean changeState(Object target, Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName() + "." + m.getName() + ".changeState");
+		Boolean response = (change != null && change.trim().compareTo("true") == 0);
+		return response;
+	}
+	
+	//return the name of the attribute collection used
+	private String getGetCollectionAttribute(Object target,Method m) {
+			String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + ".search");
+			return (change==null)?"":change.trim();
+	}
+	
+	
+	private String getPropertyAttribute(Object target,Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + ".property");
+		return (change==null)?"":change.trim();
+	}
+
+	private String getSetAttribute(Object target,Method m) {
+//		try {
+			String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + ".set");
+			return (change==null)?"":change.trim();
+	}
+
+	private String getCommandAttribute(Object target,Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + ".command");
+		return (change==null)?"":change.trim();
+	}
+	
+	private String getGetAttribute(Object target,Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + ".get");
+		return (change==null)?"":change.trim();
+	}
+	
+	
+	private String getAddAttribute(Object target,Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName() + "." + m.getName() + ".add");
+		return (change==null)?"":change.trim();
+	}
+	
+	private String getModifyAttribute(Object target,Method m) {
+//		try {
+			String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + ".modify");
+			return (change==null)?"":change.trim();
+	}
+
+	
+	public String getRemoveAttribute(Object target, Method m) {
+		String change = propertiesMemory.get(target.getClass().getSimpleName() + "." + m.getName() + ".remove");
+		return (change==null)?"":change.trim();
+	}
+
+	private boolean isInformedWithNoOutput(Object target, Method m, String key) {
+		String informedMethods = propertiesMemory.get(target.getClass().getSimpleName() + "." + m.getName() + ".informedBy");
+		if(informedMethods!=null)
+			return informedMethods.contains(key);
+		else
+			return false;
+	}
+
+	private boolean isInformedWithOutput(Object target, Method m, String key) {
+		String informedMethods = propertiesMemory.get(target.getClass().getSimpleName() + "." + m.getName() + ".informedByWithOutput");
+		if(informedMethods!=null){
+			return informedMethods.contains(key);
+		}else{
+			return false;
+		}
+	}
+
+	
+}
+		
+		«ENDFILE»
+		
+	«FILE 'aspects/UUID.java'»
+package aspects;
+
+public class UUID {
+	static private final String uuidIdentifier = System.getProperty("user.name");
+	static private Long identifier1 = new Long(0); //new Long(Long.MIN_VALUE);
+	static private Integer identifier2 = 0;
+	
+	private String clss;
+	private String uuid;
+	private Integer counter;
+
+	public UUID(Object obj) {
+		this.clss = obj.getClass().getSimpleName();
+		this.counter = 1;
+		this.uuid = randomUUID();
+	}
+
+	public String incrementUUID() {
+		this.counter++;
+		return this.getCompleteUUID();
+	}
+
+	public String getCompleteUUID() {
+		return this.clss + "-" + this.uuid + "_" + this.counter;
+	}
+
+	public String getUUID() {
+		return this.clss + "-" + this.uuid;
+	}
+
+	public synchronized static String randomUUID() {
+		if(identifier1==Integer.MAX_VALUE){
+			identifier1=Long.MIN_VALUE;
+			identifier2++;
+		}else{
+			identifier1++;
+		}
+		return String.valueOf(identifier2)+String.valueOf(identifier1);
+	}	
+}
+
+	«ENDFILE»
+	
+	
+	«FILE 'aspects/IdentifiersManager.java'»
+	package aspects;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
+
+
+public class IdentifiersManager {
+	private static Set<Class> WRAPPER_TYPES = new HashSet(Arrays.asList(String.class, Boolean.class, Character.class, Byte.class,Short.class, Integer.class, Long.class, Float.class, Double.class,Void.class));
+
+	static  Map<Object, UUID> objectIdentifier = null;
+	
+	static{
+		objectIdentifier =  new ConcurrentSkipListMap<Object, UUID>( 
+				new Comparator<Object>() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				return (o1==o2)?0:1;
+			}
+		});		
+	}
+
+
+	private static boolean isWrapperType(Class clazz) {
+		return WRAPPER_TYPES.contains(clazz);
+	}
+
+	static String incrementIdentifier(Object obj) {
+		String rslt;
+		if (!(obj instanceof Identified)) {
+			Optional<Entry<Object, UUID>> result = objectIdentifier.entrySet().parallelStream().filter(objFromSet -> objFromSet.getKey() == obj).findFirst();
+			rslt =  (result.isPresent()?result.get().getValue().incrementUUID():"");
+		} else {
+			rslt= ((Identified) obj).getUUID().incrementUUID();
+		}
+		return rslt;
+
+	}
+
+	static String addObject(Object obj) {
+		UUID uuid = null;
+		try {
+			if (!(obj instanceof Identified)) {
+				uuid = new UUID(obj);
+				objectIdentifier.put(obj, uuid);
+			} else {
+				uuid = ((Identified) obj).getUUID();
+			}
+			
+			for (Field f : obj.getClass().getFields()) {
+				if (f.get(obj) != null && !(f.get(obj) instanceof Identified)) {
+					objectIdentifier.put(f.get(obj), new UUID(f.get(obj)));
+				}
+			}
+			
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return uuid.getCompleteUUID();
+	}
+	
+	synchronized static UUID getIdentifier(Object obj) {
+		UUID rtn = null;
+		if(obj instanceof Identified){
+			rtn = ((Identified)obj).getUUID();
+		}else{
+			Optional<Entry<Object, UUID>> result = objectIdentifier.entrySet().parallelStream().filter(objFromSet -> objFromSet.getKey() == obj).findFirst();
+			rtn =  (result.isPresent()?result.get().getValue():null);
+			if (rtn == null) {
+				rtn = new UUID(obj);
+				objectIdentifier.put(obj, rtn);
+			}
+		}
+		return rtn;
+	}
+
+	static public String randomUUID() {
+		return UUID.randomUUID();
+	}
+
+	static public UUID newUUID(Object obj) {		
+		UUID uuid = new UUID(obj);
+		objectIdentifier.put(obj, uuid);
+		return uuid;
+	}
+
+}
+	«ENDFILE»
+		
+		
+		
+		«ENDIF»
+
+		
+«ENDDEFINE»
+
+

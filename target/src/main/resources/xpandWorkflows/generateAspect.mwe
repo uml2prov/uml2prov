@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<workflow>
+
+	<!-- <property name="model" value="modelAll.uml" />
+	<property name="src-gen" value="src-gen/" />
+	<property name="templateName" value="uml2aspect" />  -->
+
+
+	<!-- load model and store it in slot 'model' -->
+	<bean class="org.eclipse.xtend.typesystem.uml2.Setup" standardUML2Setup="true" />
+	
+	<!--
+	<component class="org.eclipse.xtend.typesystem.emf.XmiReader">
+		<modelFile value = "${model}" />
+		<outputSlot value= "model" />
+	</component>-->
+	
+	
+	<!-- Read in the model -->
+    <component class="org.eclipse.emf.mwe.utils.Reader">
+        <modelSlot value="model"/>
+        <uri value="${modelFile}"/>
+    </component>
+
+
+
+
+	<!--  generate code -->
+	<component class="org.eclipse.xpand2.Generator">
+	   	<metaModel id="uml"      class="org.eclipse.xtend.typesystem.uml2.UML2MetaModel"/>
+		<expand value="src::main::resources::xpandTemplates::${templateName}::main FOR model" />
+		<outlet path="${src-gen}">
+			<postprocessor class="org.eclipse.xpand2.output.JavaBeautifier" />
+		</outlet>
+		<resourceManager class ="org.eclipse.xtend.expression.ResourceManagerDefaultImpl">
+			<fileEncoding value="ISO-8859-1"/>
+		</resourceManager>
+	</component>
+
+</workflow>

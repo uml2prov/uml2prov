@@ -1,0 +1,89 @@
+«EXTENSION src::main::java::UML2PROV::utilities::Utilities»
+
+«DEFINE main FOR uml::Model»
+	«FILE 'aspects/provenanceExtractor.aj'» 
+
+		«codeVariablesDeclarationAJ()»
+		
+		«REM»declare parents : className implements Identified;«ENDREM»
+		«EXPAND DeclareParentsInPackage FOREACH allOwnedElements().typeSelect(uml::Package)»
+		
+
+		«REM» pointcut captureNews():	 initialization(db.Classes.LaneDBwithsimilarity.new(..)) «ENDREM»
+  		«EXPAND NewsPointCuts FOREACH allOwnedElements().typeSelect(uml::Package)»
+  		
+  		«REM» pointcut captureNews():	 initialization(db.Classes.LaneDBwithsimilarity.new(..)) «ENDREM»
+  		«EXPAND OperationsPointCuts FOREACH allOwnedElements().typeSelect(uml::Package)»
+  		
+  		«REM» before after news «ENDREM»
+		before(Identified targetIdentified) : this(targetIdentified) &&  !execution(* *.setUUID()) && !execution(* *.getUUID()) && («EXPAND BeforeNewsPointCuts FOREACH allOwnedElements().typeSelect(uml::Package)»){
+  				«codeInsideBefore()»
+  		}
+		after(Identified targetIdentified) : this(targetIdentified) &&  !execution(* *.setUUID()) && !execution(* *.getUUID()) && («EXPAND BeforeNewsPointCuts FOREACH allOwnedElements().typeSelect(uml::Package)»){
+  				«codeInsideAfter()»
+  		}
+  		
+  		«REM» around operations«ENDREM»
+  		Object around(Identified targetIdentified): target(targetIdentified) &&  !execution(* *.getUUID()) && !execution(* *.setUUID()) && («EXPAND AroundOperationsPointCuts FOREACH allOwnedElements().typeSelect(uml::Package)»){
+  				«codeInsideAround()»
+  		}
+  		
+  		«codeMethodsDeclarationAJ()»	
+ 	«ENDFILE»
+ 	
+ 	
+ 	«FILE 'aspects/StateManager.java'»					«generateStateManager()» 			«ENDFILE»
+ 	«FILE 'aspects/UML2PROVTreeMap.java'»				«generateUML2PROVTreeMap()» 		«ENDFILE»
+ 	«FILE 'aspects/UUID.java'» 							«generateUUID()» 					«ENDFILE»
+ 	
+ 	«FILE 'aspects/events/BGMEvent.java'» 				«generateBGMEvent()» 				«ENDFILE»
+ 	«FILE 'aspects/events/EventHelper.java'» 			«generateEventHelper()» 			«ENDFILE»
+ 	
+ 	«FILE 'aspects/listeners/BGMListener.java'» 		«generateBGMListener()» 			«ENDFILE»
+ 	«FILE 'aspects/listeners/ListenerPROVN.java'» 		«generateListenerPROVN()» 			«ENDFILE»
+ 	
+
+«ENDDEFINE»
+
+«DEFINE DeclareParentsInPackage FOR uml::Package»
+		  «IF !ownedType.typeSelect(uml::Class).isEmpty»
+		  	  	  «EXPAND DeclareParents FOREACH ownedType.typeSelect(uml::Class)»;
+		  «ENDIF»
+«ENDDEFINE»  
+«DEFINE DeclareParents FOR uml::Class»
+	declare parents : «EXPAND packageName FOREACH this.allOwningPackages().reverse()-»«name» implements Identified;«ENDDEFINE»
+
+
+«REM»Utilities«ENDREM»
+«DEFINE packageName FOR uml::Package»«IF name.compareTo("RootElement")!=0 && name.compareTo("src")!=0»«name».«ENDIF»«ENDDEFINE»  
+
+
+«REM»first block«ENDREM»
+«DEFINE NewsPointCuts FOR uml::Package»
+		  «IF !ownedType.typeSelect(uml::Class).isEmpty»
+		  	  	  pointcut captureNews«name»(): «EXPAND ClassInitialization FOREACH ownedType.typeSelect(uml::Class)»;
+		  «ENDIF»
+«ENDDEFINE»  
+«DEFINE ClassInitialization FOR uml::Class»	
+						initialization(«EXPAND packageName FOREACH this.allOwningPackages().reverse()-»«name».new(..))«IF this.package.ownedType.typeSelect(uml::Class).last()!=this-» || «ENDIF-»				
+«ENDDEFINE»
+
+
+«REM»second block«ENDREM»
+«DEFINE OperationsPointCuts FOR uml::Package»
+		  «IF !ownedType.typeSelect(uml::Class).isEmpty-» 
+		          pointcut captureOperations«name»(): «EXPAND OperationRoot FOREACH ownedType.typeSelect(uml::Class)»; «ENDIF-»
+«ENDDEFINE»  
+		          
+«DEFINE OperationRoot FOR uml::Class»«EXPAND OperationCall FOREACH this.ownedOperation»«ENDDEFINE»
+
+«DEFINE OperationCall FOR uml::Operation»
+			«IF !this.isStatic &&  this.class.name != name -»call(* «EXPAND packageName FOREACH this.class.allOwningPackages().reverse()»«this.class.name».«name»(..))«IF !(this.class.ownedOperation.last()==this && this.class.package.ownedType.typeSelect(uml::Class).last() == this.class)-» || «ENDIF-»«ENDIF-»
+«ENDDEFINE»
+
+«REM»all new pointcuts«ENDREM»
+«DEFINE BeforeNewsPointCuts FOR uml::Package»«IF !ownedType.typeSelect(uml::Class).isEmpty»|| captureNews«name»() «ENDIF»«ENDDEFINE»  
+
+«REM»all operations pointcuts«ENDREM»
+«DEFINE AroundOperationsPointCuts FOR uml::Package»«IF !ownedType.typeSelect(uml::Class).isEmpty»|| captureOperations«name»()«ENDIF»«ENDDEFINE»  
+
