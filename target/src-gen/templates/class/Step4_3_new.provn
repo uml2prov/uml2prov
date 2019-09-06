@@ -1,8 +1,0 @@
-entity(var:target, [prov:type='exe:Step4_3',prov:type='u2p:Object'])
-entity(var:input, [prov:value='var:inputValue'])
-entity(var:attribute, [prov:value='var:attValue',prov:type='u2p:Attribute',u2p:attributeName='var:attName',u2p:className='var:attType'])
-activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ])
-wasGeneratedBy(var:target,var:operation,- )
-used(var:operation, var:input,- , [])
-wasDerivedFrom(var:target, var:input ,[])   
-hadMember(var:target,var:attribute)

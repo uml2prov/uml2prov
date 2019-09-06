@@ -1,3 +1,0 @@
-entity(var:source, [prov:type='exe:Object',prov:type='exe:Image_Assistant',prov:type='prov:Collection'])
-activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ])
-used(var:operation, var:source,- , [])

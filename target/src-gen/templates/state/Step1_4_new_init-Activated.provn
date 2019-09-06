@@ -1,7 +1,0 @@
-entity(var:objectSMD, [prov:type='u2p:StateMachine'])
-entity(var:target, [prov:type='exe:Step1_4',u2p:state='var:targetState'])
-agent(var:object, [])
-activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ,prov:type='exe:Step1_4'	])
-wasGeneratedBy(var:target,var:operation,- )
-specializationOf(var:target, var:objectSMD)
-wasAttributedTo(var:objectSMD, var:object )
