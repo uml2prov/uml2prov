@@ -54,7 +54,6 @@ public class Principal {
 			
 			new PROVNGenerator().generate(CLASSPROVFILEPATH, "templates/class");
 			
-			
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

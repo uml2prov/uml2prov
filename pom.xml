@@ -7,23 +7,28 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>UML2PROV</name>
 	<description>Framework for making applications provenance-aware</description>
-	<packaging>jar</packaging>
+	<!--<packaging>jar</packaging> -->
 
 	<build>
 		<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-
-
-
 		<resources>
-
 			<resource>
 				<directory>${project.basedir}/src/resources</directory>
 			</resource>
-
-
 		</resources>
 
 		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+
 
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -63,7 +68,7 @@
 							</resources>
 						</configuration>
 					</execution>
-					
+
 				</executions>
 			</plugin>
 
@@ -93,18 +98,34 @@
 			</plugin>
 
 
+
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<excludes>
-						<exclude>**/resources/**/*.java</exclude>
-					</excludes>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>izpack</goal>
+						</goals>
+						<configuration>
+							<installFile>${basedir}/src/main/izpack/install.xml</installFile>
+							<izpackBasedir>${project.build.directory}</izpackBasedir>
+							<installerFile>${project.build.directory}/Setup-uml2prov-1.0-SNAPSHOT.jar</installerFile>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.izpack</groupId>
+						<artifactId>izpack-standalone-compiler</artifactId>
+						<version>4.2.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
+
+
+
 		</plugins>
 
 
@@ -119,7 +140,7 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.5</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.eclipse.xtend</groupId>
 			<artifactId>org.eclipse.xtend.lib</artifactId>
