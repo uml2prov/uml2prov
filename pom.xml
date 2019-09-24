@@ -13,7 +13,7 @@
 		<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
 		<resources>
 			<resource>
-				<directory>${project.basedir}/src/resources</directory>
+				<directory>${project.basedir}/src/main/resources</directory>
 			</resource>
 		</resources>
 

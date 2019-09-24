@@ -2,9 +2,7 @@ package UML2PROV;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,14 +10,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.emf.mwe.core.WorkflowEngine;
+import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
 import org.eclipse.m2m.atl.core.ATLCoreException;
-import org.eclipse.osgi.container.Module.StopOptions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -28,10 +26,8 @@ import UML2PROV.atl.m2m.uml2prop.C2Properties;
 import UML2PROV.atl.m2m.uml2prov.C2PROV;
 import UML2PROV.atl.m2m.uml2prov.SMD2PROV;
 import UML2PROV.atl.m2m.uml2prov.SeqD2PROV;
+import xtendCode.generatorAspect.AspectGenerator;
 import xtendCode.generatorPROVN.PROVNGenerator;
-
-import org.eclipse.emf.mwe.core.WorkflowEngine;
-import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
 
 
 
@@ -201,15 +197,15 @@ public class Principal {
 	    
 				
 //				create aspect
-				properties = new HashMap<String, String>();			
-				properties.put("modelFile", args[0]);
-				properties.put("outModel", "outModel.txt");
-				properties.put("src-gen", "src-gen/");
-				properties.put("templateName", "uml2aspect");
-			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/generateAspect.mwe", new NullProgressMonitor(), properties, slotMap);
-			    long bgmTime = bgmSW.elapsedTime();
-
-
+			    new AspectGenerator().generateBGM(args[0]);
+				
+//				properties = new HashMap<String, String>();			
+//				properties.put("modelFile", args[0]);
+//				properties.put("outModel", "outModel.txt");
+//				properties.put("src-gen", "src-gen/");
+//				properties.put("templateName", "uml2aspect");
+//			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/generateAspect.mwe", new NullProgressMonitor(), properties, slotMap);
+//			    long bgmTime = bgmSW.elapsedTime();
 //				System.out.println("\n\n\n ");
 
 				
@@ -242,15 +238,17 @@ public class Principal {
 //				properties.put("templateName", "provnTemplate");
 //			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/M2T.mwe", new NullProgressMonitor(), properties, slotMap);
 			    long smTime = classSM.elapsedTime();
+			    			    
+			    
 			    
 			    System.err.println("\n\n\n");
 			    System.err.println("Class: "+classTime/1000000);
 			    System.err.println("SMD: "+smTime/1000000);
 			    System.err.println("SQ: "+seqTime/1000000);
 			    
-			    System.err.println("Templates total: "+ (classTime+smTime+seqTime)/1000000);
-			    System.err.println("BGM: "+bgmTime/1000000);
-			    System.err.println(((classTime+smTime+seqTime)/1000000)+";"+bgmTime/1000000);
+//			    System.err.println("Templates total: "+ (classTime+smTime+seqTime)/1000000);
+//			    System.err.println("BGM: "+bgmTime/1000000);
+//			    System.err.println(((classTime+smTime+seqTime)/1000000)+";"+bgmTime/1000000);
 			    
 
 //				 delete previous files
