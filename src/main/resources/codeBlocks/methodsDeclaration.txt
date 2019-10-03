@@ -1,3 +1,5 @@
+
+
 private void getStarterVariable(Identified target, String ID_MSG, String starter) {
 	provenance(EXECUTION_ID, target, ID_MSG, "starter", starter);	
 }
@@ -177,11 +179,13 @@ private void getnewRequestNews(Identified target, String ID_MSG){
 	
 
 	private void getTargetVariables(Identified target, Method method, UUID targetID, String sourceID, String ID_MSG, BGMEvent endMethod){
+		
 		// ------------------ target variable
 		if(changeState(target, method) && targetID.getCompleteUUID().compareTo(sourceID)==0){
-			provenance(EXECUTION_ID, target, ID_MSG, "target", IdentifiersManager.incrementIdentifier(target));				
 			
+			provenance(EXECUTION_ID, target, ID_MSG, "target", IdentifiersManager.incrementIdentifier(target));				
 			String newState = getTargetState(target, method);
+			
 			if(!newState.isEmpty()){
 				provenance(EXECUTION_ID, target, ID_MSG, "sourceState", getCurrentState(target));
 				provenance(EXECUTION_ID, target, ID_MSG, "targetState", newState);
@@ -240,16 +244,7 @@ private void getnewRequestNews(Identified target, String ID_MSG){
 		try {	
 			//gestion de atributos tras la ejecucion del metodo
 			Arrays.asList(target.getClass().getDeclaredFields()).stream()
-					.filter(field -> {
-						if(getPropertyAttribute(target, method).compareTo("") != 0 || 
-								getAddAttribute(target, method).compareTo("") != 0 ||
-								getModifyAttribute(target, method).compareTo("") != 0 ||
-								getRemoveAttribute(target, method).compareTo("") != 0 ){
-							return true;
-						}else{
-							return false;
-						}		
-					}) //only those fields included in the diagram
+					.filter(field -> propertiesMemoryAttributes.get(target.getClass().getSimpleName()+".attributes").contains(field.getName())) //only those fields included in the diagram
 					.forEach(field -> {
 						field.setAccessible(true);
 						String fieldStereotype = "none";
@@ -304,9 +299,9 @@ private void getnewRequestNews(Identified target, String ID_MSG){
 							else {
 								if (changeState(target, method)) {
 									provenance(EXECUTION_ID, target, ID_MSG, "attribute", fieldUUID);
-									provenanceValueType(target, "newAttrValue", EXECUTION_ID,ID_MSG, fieldUUID, "value", fieldValue);
-									provenanceValueType(target, "newAttrType",EXECUTION_ID,ID_MSG, fieldUUID, "type", fieldType);
-									provenanceValueType(target, "newAttrName",EXECUTION_ID,ID_MSG, fieldUUID, "attName",field.getName());
+									provenanceValueType(target, "attValue", EXECUTION_ID,ID_MSG, fieldUUID, "value", fieldValue);
+									provenanceValueType(target, "attType",EXECUTION_ID,ID_MSG, fieldUUID, "type", fieldType);
+									provenanceValueType(target, "attName",EXECUTION_ID,ID_MSG, fieldUUID, "attName",field.getName());
 								}
 							}									
 						} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
@@ -432,7 +427,8 @@ private void getnewRequestNews(Identified target, String ID_MSG){
 	
 	private String getTargetState(Identified target, Method m) {
 		String currentState= StateManager.getState(target);
-		String change = propertiesMemory.get(target.getClass().getSimpleName()+ "." + m.getName() + "."+currentState);
+		String property = target.getClass().getSimpleName()+ "." + m.getName() + "."+currentState;
+		String change = propertiesMemory.get(property.trim());
 		return (change==null)?"":change.trim();
 	}
 	

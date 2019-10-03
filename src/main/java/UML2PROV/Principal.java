@@ -1,55 +1,41 @@
 package UML2PROV;
 
-
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.emf.mwe.core.WorkflowEngine;
-import org.eclipse.emf.mwe.core.monitor.NullProgressMonitor;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.m2m.atl.core.ATLCoreException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
 import UML2PROV.atl.m2m.uml2prop.C2Properties;
 import UML2PROV.atl.m2m.uml2prov.C2PROV;
 import UML2PROV.atl.m2m.uml2prov.SMD2PROV;
 import UML2PROV.atl.m2m.uml2prov.SeqD2PROV;
 import xtendCode.generatorAspect.AspectGenerator;
 import xtendCode.generatorPROVN.PROVNGenerator;
-
-
-
-
+import xtendCode.generatorProperties.PropertiesGenerator;
 
 public class Principal {
 
+	
 	private static final String CLASSPROVFILEPATH = "provModelClass.xmi";
 	private static final String SEQPROVFILEPATH = "provModelSeq.xmi";
 	private static final String SMPROVFILEPATH = "provModelSm.xmi";
 	private static final String PROPFILEPATH = "provModelProperties.xmi";
 
-	public static void class2prov(String model) throws IOException, ParserConfigurationException, SAXException, TransformerException {
+	public static void class2prov(String model)
+			throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		try {
 			C2PROV runner2 = new C2PROV();
 			runner2.loadModels(model);
-			// runner2.doC2PROV(new NullProgressMonitor());
 			runner2.doC2PROV(null);
 			runner2.saveModels(CLASSPROVFILEPATH);
-			
+
 			new PROVNGenerator().generate(CLASSPROVFILEPATH, "templates/class");
-			
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -67,7 +53,7 @@ public class Principal {
 //			DOMSource source = new DOMSource(doc);
 //			StreamResult result = new StreamResult(new File(CLASSPROVFILEPATH));
 //			transformer.transform(source, result);
-	
+
 		} catch (ATLCoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,10 +67,8 @@ public class Principal {
 			runnerSeq.loadModels(model);
 			runnerSeq.doSeqD2PROV(null);
 			runnerSeq.saveModels(SEQPROVFILEPATH);
-			
-			new PROVNGenerator().generate(SEQPROVFILEPATH, "templates/sequence");
 
-			
+			new PROVNGenerator().generate(SEQPROVFILEPATH, "templates/sequence");
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -114,7 +98,7 @@ public class Principal {
 			runnerSM.loadModels(model);
 			runnerSM.doSMD2PROV(null);
 			runnerSM.saveModels(SMPROVFILEPATH);
-			
+
 			new PROVNGenerator().generate(SMPROVFILEPATH, "templates/state");
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -151,21 +135,23 @@ public class Principal {
 			runnerProp.doC2Properties(null);
 			runnerProp.saveModels(PROPFILEPATH);
 
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(PROPFILEPATH);
+			PropertiesGenerator.generateProperties(PROPFILEPATH);
 
-			Element documentRoot = (Element) doc.getFirstChild();
+//			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+//			Document doc = docBuilder.parse(PROPFILEPATH);
+//
+//			Element documentRoot = (Element) doc.getFirstChild();
+//
+//			documentRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+//			documentRoot.setAttribute("xsi:schemaLocation", "http://www.w3.org/ns/properties https://uml2prov.github.io/properties.ecore");
+//
+//			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+//			Transformer transformer = transformerFactory.newTransformer();
+//			DOMSource source = new DOMSource(doc);
+//			StreamResult result = new StreamResult(new File(PROPFILEPATH));
+//			transformer.transform(source, result);
 
-			documentRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-			documentRoot.setAttribute("xsi:schemaLocation", "http://www.w3.org/ns/properties https://uml2prov.github.io/properties.ecore");
-
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(PROPFILEPATH));
-			transformer.transform(source, result);
-			
 		} catch (ATLCoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,111 +159,47 @@ public class Principal {
 	}
 
 	public static void main(String[] args) {
-			
-		Map<String, ?> slotMap = new HashMap<String, Object>();
-		
 		try {
-			if (args.length < 1) {
-				System.out.println("Arguments not valid : {IN_model_path}.");
-			} else {
-				for(int i = 0;i<=0;i++){
 
-				Map<String, String> properties = new HashMap<String, String>();		
-				
+			Options options = new Options();
+			options.addOption("m", true, "UML model addressed by UML2PROV.");
+			options.addOption("i", true, "Java class implementing BGMListener. This class sets the configuration for managing and storing bindings.");
 
-//				create pp.properties
-				Stopwatch bgmSW = new Stopwatch();
-				
-				class2prop(args[0]);
-//				properties = new HashMap<String, String>();			
-//				properties.put("modelFile", PROPFILEPATH);
-//				properties.put("src-gen", "src-gen/");
-//				properties.put("templateName", "propertiesTemplate");
-//			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/generateProperties.mwe", new NullProgressMonitor(), properties, slotMap);
-	    
-				
-//				create aspect
-			    new AspectGenerator().generateBGM(args[0]);
-				
-//				properties = new HashMap<String, String>();			
-//				properties.put("modelFile", args[0]);
-//				properties.put("outModel", "outModel.txt");
-//				properties.put("src-gen", "src-gen/");
-//				properties.put("templateName", "uml2aspect");
-//			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/generateAspect.mwe", new NullProgressMonitor(), properties, slotMap);
-//			    long bgmTime = bgmSW.elapsedTime();
-//				System.out.println("\n\n\n ");
+			CommandLineParser parser = new DefaultParser();
+			CommandLine line = parser.parse(options, args);
+			
+			if (line.hasOption("m") && line.hasOption("i")) {
+				String model= line.getOptionValue("m");
+				String interfaceImplemented= line.getOptionValue("i");
 
+				new AspectGenerator().generateBGM(model,interfaceImplemented);
+				class2prov(model);
+				seq2prov(model);
+				smd2prov(model);
+				class2prop(model);
 				
-				Stopwatch classSW = new Stopwatch();
-				class2prov(args[0]);	
-//				properties = new HashMap<String, String>();	
-//				properties.put("modelFile", CLASSPROVFILEPATH);
-//				properties.put("src-gen", "src-gen/templates/class");
-//				properties.put("templateName", "provnTemplate");
-//			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/M2T.mwe", new NullProgressMonitor(), properties, slotMap);
-			    long classTime = classSW.elapsedTime();
-//			    
-//			    
-				System.out.println("\n\n\n ");
-				Stopwatch classSQ = new Stopwatch();
-				seq2prov(args[0]);
-//				properties = new HashMap<String, String>();	
-//				properties.put("modelFile", SEQPROVFILEPATH);
-//				properties.put("src-gen", "src-gen/templates/sequence");
-//				properties.put("templateName", "provnTemplate");			
-//			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/M2T.mwe", new NullProgressMonitor(), properties, slotMap);
-			    long seqTime = classSQ.elapsedTime();
-			    
-				System.out.println("\n\n\n ");
-				Stopwatch classSM = new Stopwatch();
-				smd2prov(args[0]);
-//				properties = new HashMap<String, String>();	
-//				properties.put("modelFile", SMPROVFILEPATH);
-//				properties.put("src-gen", "src-gen/templates/state");
-//				properties.put("templateName", "provnTemplate");
-//			    new WorkflowEngine().run("src/main/resources/xpandWorkflows/M2T.mwe", new NullProgressMonitor(), properties, slotMap);
-			    long smTime = classSM.elapsedTime();
-			    			    
-			    
-			    
-			    System.err.println("\n\n\n");
-			    System.err.println("Class: "+classTime/1000000);
-			    System.err.println("SMD: "+smTime/1000000);
-			    System.err.println("SQ: "+seqTime/1000000);
-			    
-//			    System.err.println("Templates total: "+ (classTime+smTime+seqTime)/1000000);
-//			    System.err.println("BGM: "+bgmTime/1000000);
-//			    System.err.println(((classTime+smTime+seqTime)/1000000)+";"+bgmTime/1000000);
-			    
+				FileUtils.copyFile(new File(interfaceImplemented), new File("src-gen/aspects/listeners/"+interfaceImplemented));
 
-//				 delete previous files
-				 new File(CLASSPROVFILEPATH).delete();
-				 new File(SEQPROVFILEPATH).delete();
-				 new File(PROPFILEPATH).delete();
-				 new File(SMPROVFILEPATH).delete();
-				}
+
+				new File(CLASSPROVFILEPATH).delete();
+				new File(SEQPROVFILEPATH).delete();
+				new File(PROPFILEPATH).delete();
+				new File(SMPROVFILEPATH).delete();
+//				
+				
+			}else if(!line.hasOption("m")){
+				System.out.println("Please insert a UML model using parameter -m");
+			}else if(!line.hasOption("i")){
+				System.out.println("Please insert a java class implementing the interface BGMListenerInterface -i");
 			}
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ParserConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (TransformerConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (TransformerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-	}	
+	}
+	
+
 
 }

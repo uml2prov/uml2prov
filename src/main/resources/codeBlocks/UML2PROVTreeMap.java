@@ -14,3 +14,4 @@ public class UML2PROVTreeMap extends TreeMap<Object, UUID>{
 		});
 	}
 }
+

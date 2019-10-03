@@ -41,5 +41,11 @@ public class UUID {
 			identifier1++;
 		}
 		return String.valueOf(identifier2)+String.valueOf(identifier1);
+	}
+
+	public String getClss() {
+		// TODO Auto-generated method stub
+		return this.clss;
 	}	
 }
+

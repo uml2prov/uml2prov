@@ -11,18 +11,15 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import aspects.listeners.ListenerMongoDB;
 
 /**
- * Helper para el registro de listeners de tipo Listener gen茅rico y para la
- * notificaci贸n de los eventos a los listeners registrados.
+ * Helper para el registro de listeners de tipo Listener gen閞ico y para la
+ * notificaci髇 de los eventos a los listeners registrados.
  * <p>
- * Las clases que sean fuente de eventos de ejecuci贸n podr谩n usar objetos de
- * esta clase para realizar las tareas relacionadas con la gesti贸n de los 
- * listener y la notificaci贸n de los eventos.
+ * Las clases que sean fuente de eventos de ejecuci髇 podr醤 usar objetos de
+ * esta clase para realizar las tareas relacionadas con la gesti髇 de los 
+ * listener y la notificaci髇 de los eventos.
  */
 public class EventHelper<L> {
   // Lista de listeners suscritos
@@ -32,7 +29,7 @@ public class EventHelper<L> {
 
   /**
    * El constructor recibe la clase del listener, para averiguar cuales son su 
-   * m茅todos por introspecci贸n
+   * m閠odos por introspecci髇
    */
   public EventHelper(Class<L> interfaceListener) {
     initMethodTable(interfaceListener);
@@ -61,7 +58,7 @@ private void initMethodTable(Class interfaceListener) {
   }
 
   /**
-   * Elimina la suscripci贸n de un listener
+   * Elimina la suscripci髇 de un listener
    */
   public synchronized void removeListener(L l) {
     if (listeners != null) {
@@ -106,3 +103,4 @@ private void initMethodTable(Class interfaceListener) {
     }
   }
 }
+

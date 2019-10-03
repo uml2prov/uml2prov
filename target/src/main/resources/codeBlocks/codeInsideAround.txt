@@ -1,51 +1,51 @@
-		Stopwatch swAll = new Stopwatch();
+		final Method method = ((MethodSignature) thisJoinPoint.getSignature()).getMethod();
+		final Identified target = targetIdentified;
+		String methodName = method.getName();
+		String className = target.getClass().getSimpleName();
 
-	final Method method = ((MethodSignature) thisJoinPoint.getSignature()).getMethod();
-	final Identified target = targetIdentified;
-	String methodName = method.getName();
-	String className = target.getClass().getSimpleName();
-
-	final String ID_MSG = className+"-"+methodName+ "-" + IdentifiersManager.randomUUID();
-			
+		final String ID_MSG = className + "-" + methodName + "-" + IdentifiersManager.randomUUID();
 
 //	
-	Boolean inSequence = (propertiesMemory.get(className+"."+methodName+".seqD")!=null)?true:false;
-	Boolean inClass =  (propertiesMemory.get(className+"."+methodName+".classD")!=null)?true:false;
-	Boolean inState=  (propertiesMemory.get(className+"."+methodName+".stD")!=null)?true:false;
+		Boolean inSequence = (propertiesMemory.get(className + "." + methodName + ".seqD") != null) ? true : false;
+		Boolean inClass = (propertiesMemory.get(className + "." + methodName + ".classD") != null) ? true : false;
+		Boolean inState = (propertiesMemory.get(className + "." + methodName + ".stD") != null) ? true : false;
 
-	if (target != null) {
-		
-		BGMEvent initMethod = new BGMEvent(targetIdentified, EXECUTION_ID, targetIdentified.getClass().getSimpleName(), ID_MSG);
-		initMethod.setState(getCurrentState(targetIdentified));
-		try{bgmm.fireEvent("operationStart",initMethod);} catch (InvocationTargetException e) {e.printStackTrace();}
-		
-		final String sourceID = IdentifiersManager.getIdentifier(target).getCompleteUUID();
-		//provenance before execution
-		String starter="";
-		if(inSequence) starter =this.beforeManagement(target, method.getName(), ID_MSG);
-		
-		provenanceBeforeExecution(target, method, thisJoinPoint.getArgs(), ID_MSG, starter, inSequence, inClass, inState);
-		provenance(EXECUTION_ID, targetIdentified, ID_MSG, "operationStartTime" ,String.valueOf(new Date().getTime()));
-		Stopwatch swProceed = new Stopwatch();
-		final Object rtn = proceed(targetIdentified);
-		long timeProceed = swProceed.elapsedTime();
-		
-		
-	
-		provenance(EXECUTION_ID, targetIdentified, ID_MSG, "operationEndTime", String.valueOf(new Date().getTime()));	
-		//provenance after execution
-		provenanceAfterExecution(target, method, thisJoinPoint.getArgs(), ID_MSG, rtn, sourceID, inSequence, inClass, inState);
-	
-		
-		if(inSequence) afterManagement(target, method.getName(), ID_MSG, IdentifiersManager.randomUUID());
-		
-		long timeAround = swAll.elapsedTime();
+		if (target != null) {
+
+			BGMEvent initMethod = new BGMEvent(targetIdentified, EXECUTION_ID,
+					targetIdentified.getClass().getSimpleName(), ID_MSG);
+			initMethod.setState(getCurrentState(targetIdentified));
+			try {
+				bgmm.fireEvent("operationStart", initMethod);
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+
+			final String sourceID = IdentifiersManager.getIdentifier(target).getCompleteUUID();
+			// provenance before execution
+			String starter = "";
+			if (inSequence)
+				starter = this.beforeManagement(target, method.getName(), ID_MSG);
+
+			provenanceBeforeExecution(target, method, thisJoinPoint.getArgs(), ID_MSG, starter, inSequence, inClass,
+					inState);
+			provenance(EXECUTION_ID, targetIdentified, ID_MSG, "operationStartTime",
+					String.valueOf(new Date().getTime()));
+			final Object rtn = proceed(targetIdentified);
+
+			provenance(EXECUTION_ID, targetIdentified, ID_MSG, "operationEndTime",
+					String.valueOf(new Date().getTime()));
+			// provenance after execution
+			provenanceAfterExecution(target, method, thisJoinPoint.getArgs(), ID_MSG, rtn, sourceID, inSequence,
+					inClass, inState);
+
+			if (inSequence)
+				afterManagement(target, method.getName(), ID_MSG, IdentifiersManager.randomUUID());
 
 //		System.err.print("-");
-		n++;
+			n++;
 //		sum = sum + (timeAround-timeProceed);
 //		System.err.println("Mean: "+sum/n);
-		System.out.println(target.getClass().getSimpleName()+"."+method.getName()+";"+(timeProceed)+";"+(timeAround)+";"+(timeAround-timeProceed));
 
 //		StringBuffer sb = new StringBuffer();
 //		sb.append("-------------------------------------------------------");
@@ -55,10 +55,10 @@
 //		sb.append("\nobjIdArray: "+objIdArray.size());
 //		sb.append("\n-------------------------------------------------------");
 //		System.out.println(sb);
-		
-		return rtn;
-		
-	} else {
-		Object rtn = proceed(targetIdentified);
-		return rtn;
-	}
+
+			return rtn;
+
+		} else {
+			Object rtn = proceed(targetIdentified);
+			return rtn;
+		}

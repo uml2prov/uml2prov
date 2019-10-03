@@ -5,6 +5,13 @@ import java.util.EventObject;
 
 public class BGMEvent extends EventObject {
 	
+	@Override
+	public String toString() {
+		return "BGMEvent [executionID=" + executionID + ", className=" + className + ", executionIdMethod="
+				+ executionIdMethod + ", varName=" + varName + ", value=" + value + ", identifier=" + identifier
+				+ ", type=" + type + ", state=" + state + "]";
+	}
+
 	//para los elementos
 	private String executionID;
 	private String className;
@@ -98,3 +105,4 @@ public class BGMEvent extends EventObject {
 	
 
 }
+

@@ -1,48 +1,41 @@
-	UUID id = IdentifiersManager.getIdentifier(thisJoinPoint.getTarget());
-	final String ID_MSG = id.getClss()+"-new-"+id.getUUID();
-	
-
-	String className = thisJoinPoint.getTarget().getClass().getSimpleName();
-	Boolean inSequence = (propertiesMemory.get(className+"."+className+".seqD")!=null)?true:false;
-	Boolean inClass =  (propertiesMemory.get(className+"."+className+".classD")!=null)?true:false;
-	Boolean inState=  (propertiesMemory.get(className+"."+className+".stD")!=null)?true:false;
-	
-	BGMEvent initMethod = new BGMEvent(thisJoinPoint.getTarget(), EXECUTION_ID, thisJoinPoint.getTarget().getClass().getSimpleName(), ID_MSG);
-
-	long timeProceedNew = swProceedNew.elapsedTime();
-	
-	final Identified targetIdentifierAux = (Identified)thisJoinPoint.getTarget();
-	
-	if (targetIdentifierAux != null) {
-
-		//cuando finaliza la operacion
-		provenance(EXECUTION_ID, targetIdentifierAux, ID_MSG, "operationEndTime", String.valueOf(new Date().getTime()));
-		provenance(EXECUTION_ID, targetIdentifierAux, ID_MSG, "operation", ID_MSG);
-
-		getInputVariableNews(targetIdentifierAux, thisJoinPoint.getArgs(), ID_MSG);
-		if(inSequence) getnewRequestNews(targetIdentifierAux, ID_MSG);
-		if(inClass) getAttributesNews(targetIdentifierAux, ID_MSG);
-		if(inState) getTargetStateNews(targetIdentifierAux, initMethod);
+		UUID id = IdentifiersManager.getIdentifier(thisJoinPoint.getTarget());
+		final String ID_MSG = id.getClss()+"-new-"+id.getUUID();
 		
-//		// ------------------ target variable
+
+		String className = thisJoinPoint.getTarget().getClass().getSimpleName();
+		Boolean inSequence = (propertiesMemory.get(className+"."+className+".seqD")!=null)?true:false;
+		Boolean inClass =  (propertiesMemory.get(className+"."+className+".classD")!=null)?true:false;
+		Boolean inState=  (propertiesMemory.get(className+"."+className+".stD")!=null)?true:false;
 		
-		provenance(EXECUTION_ID, (Identified)thisJoinPoint.getTarget(), 
-				ID_MSG, 
-				"target", 
-				IdentifiersManager.getIdentifier(thisJoinPoint.getTarget()).getCompleteUUID());
-//		// ------------------ target variable
+		BGMEvent initMethod = new BGMEvent(thisJoinPoint.getTarget(), EXECUTION_ID, thisJoinPoint.getTarget().getClass().getSimpleName(), ID_MSG);		
+		final Identified targetIdentifierAux = (Identified)thisJoinPoint.getTarget();
+		
+		if (targetIdentifierAux != null) {
 
-		if(inSequence) this.afterManagement(targetIdentifierAux, thisJoinPoint.getTarget().getClass().getSimpleName() , ID_MSG, IdentifiersManager.randomUUID());
+			//cuando finaliza la operacion
+			provenance(EXECUTION_ID, targetIdentifierAux, ID_MSG, "operationEndTime", String.valueOf(new Date().getTime()));
+			provenance(EXECUTION_ID, targetIdentifierAux, ID_MSG, "operation", ID_MSG);
 
-		try {
-			bgmm.fireEvent("operationEnd",initMethod);
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			getInputVariableNews(targetIdentifierAux, thisJoinPoint.getArgs(), ID_MSG);
+			if(inSequence) getnewRequestNews(targetIdentifierAux, ID_MSG);
+			if(inClass) getAttributesNews(targetIdentifierAux, ID_MSG);
+			if(inState) getTargetStateNews(targetIdentifierAux, initMethod);
+			
+//			// ------------------ target variable
+			
+			provenance(EXECUTION_ID, (Identified)thisJoinPoint.getTarget(), 
+					ID_MSG, 
+					"target", 
+					IdentifiersManager.getIdentifier(thisJoinPoint.getTarget()).getCompleteUUID());
+//			// ------------------ target variable
+
+			if(inSequence) this.afterManagement(targetIdentifierAux, thisJoinPoint.getTarget().getClass().getSimpleName() , ID_MSG, IdentifiersManager.randomUUID());
+
+			try {
+				bgmm.fireEvent("operationEnd",initMethod);
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+			n++;
 		}
-		
-		long timeAroundNew = swAroundNew.elapsedTime();
-		
-		n++;
-			System.out.println(targetIdentifierAux.getClass().getSimpleName()+";"+(timeProceedNew)+";"+(timeAroundNew)+";"+(timeAroundNew-timeProceedNew));
-	}
