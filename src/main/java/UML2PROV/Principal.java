@@ -172,7 +172,7 @@ public class Principal {
 				String model= line.getOptionValue("m");
 				String interfaceImplemented= line.getOptionValue("i");
 
-				new AspectGenerator().generateBGM(model,interfaceImplemented);
+				AspectGenerator.generateBGM(model,interfaceImplemented);
 				class2prov(model);
 				seq2prov(model);
 				smd2prov(model);
@@ -184,8 +184,7 @@ public class Principal {
 				new File(CLASSPROVFILEPATH).delete();
 				new File(SEQPROVFILEPATH).delete();
 				new File(PROPFILEPATH).delete();
-				new File(SMPROVFILEPATH).delete();
-//				
+				new File(SMPROVFILEPATH).delete();		
 				
 			}else if(!line.hasOption("m")){
 				System.out.println("Please insert a UML model using parameter -m");
