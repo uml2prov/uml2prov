@@ -41,6 +41,8 @@ import org.eclipse.m2m.atl.core.emf.EMFModelFactory;
 import org.eclipse.m2m.atl.core.launch.ILauncher;
 import org.eclipse.m2m.atl.engine.emfvm.launch.EMFVMLauncher;
 
+import UML2PROV.utilities.AspectConstructor;
+
 /**
  * Entry point of the 'SMD2PROV' transformation module.
  */
@@ -98,7 +100,9 @@ public class SMD2PROV {
 	public SMD2PROV() throws IOException {
 		properties = new Properties();
 		
-		properties.load(new FileInputStream("src/main/resources/properties/SMD2PROV.properties"));
+		properties.load(new FileInputStream("resources/properties/SMD2PROV.properties"));
+//		properties.load(AspectConstructor.class.getResourceAsStream("resources/properties/SMD2PROV.properties"));
+
 
 		
 //		properties.load(getClass().getResourceAsStream("/properties/SMD2PROV.properties"));

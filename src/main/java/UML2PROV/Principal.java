@@ -27,6 +27,50 @@ public class Principal {
 	private static final String SMPROVFILEPATH = "provModelSm.xmi";
 	private static final String PROPFILEPATH = "provModelProperties.xmi";
 
+	public static void main(String[] args) {
+		try {
+
+			Options options = new Options();
+			options.addOption("m", true, "UML model addressed by UML2PROV.");
+			options.addOption("i", true, "Java class implementing BGMListener. This class sets the configuration for managing and storing bindings.");
+
+			CommandLineParser parser = new DefaultParser();
+			CommandLine line = parser.parse(options, args);
+			
+			if (line.hasOption("m") && line.hasOption("i")) {
+				String model= line.getOptionValue("m");
+				String interfaceImplemented= line.getOptionValue("i");
+				String nameInterface = new File(interfaceImplemented).getName();
+
+				AspectGenerator.generateBGM(model,nameInterface);
+				class2prov(model);
+				seq2prov(model);
+				smd2prov(model);
+				class2prop(model);
+				
+				FileUtils.copyFile(new File(interfaceImplemented), new File("src-gen/aspects/listeners/"+interfaceImplemented));
+
+
+				new File(CLASSPROVFILEPATH).delete();
+				new File(SEQPROVFILEPATH).delete();
+				new File(PROPFILEPATH).delete();
+				new File(SMPROVFILEPATH).delete();		
+				
+			}else if(!line.hasOption("m")){
+				System.out.println("Please insert a UML model using parameter -m");
+			}else if(!line.hasOption("i")){
+				System.out.println("Please insert a java class implementing the interface BGMListenerInterface -i");
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	
 	public static void class2prov(String model)
 			throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		try {
@@ -158,46 +202,7 @@ public class Principal {
 		}
 	}
 
-	public static void main(String[] args) {
-		try {
 
-			Options options = new Options();
-			options.addOption("m", true, "UML model addressed by UML2PROV.");
-			options.addOption("i", true, "Java class implementing BGMListener. This class sets the configuration for managing and storing bindings.");
-
-			CommandLineParser parser = new DefaultParser();
-			CommandLine line = parser.parse(options, args);
-			
-			if (line.hasOption("m") && line.hasOption("i")) {
-				String model= line.getOptionValue("m");
-				String interfaceImplemented= line.getOptionValue("i");
-
-				AspectGenerator.generateBGM(model,interfaceImplemented);
-				class2prov(model);
-				seq2prov(model);
-				smd2prov(model);
-				class2prop(model);
-				
-				FileUtils.copyFile(new File(interfaceImplemented), new File("src-gen/aspects/listeners/"+interfaceImplemented));
-
-
-				new File(CLASSPROVFILEPATH).delete();
-				new File(SEQPROVFILEPATH).delete();
-				new File(PROPFILEPATH).delete();
-				new File(SMPROVFILEPATH).delete();		
-				
-			}else if(!line.hasOption("m")){
-				System.out.println("Please insert a UML model using parameter -m");
-			}else if(!line.hasOption("i")){
-				System.out.println("Please insert a java class implementing the interface BGMListenerInterface -i");
-			}
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 	
 
 

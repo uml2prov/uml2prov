@@ -1,5 +1,0 @@
-entity(var:source, [prov:type='exe:Object',prov:type='exe:Stack',prov:type='prov:Collection'])
-entity(var:output, [prov:value='var:outputValue'])
-activity(var:operation, ,[tmpl:startTime='var:operationStartTime', tmpl:endTime='var:operationEndTime' ])
-wasGeneratedBy(var:output,var:operation,- )
-used(var:operation, var:source,- , [])

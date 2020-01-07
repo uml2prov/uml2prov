@@ -1,0 +1,214 @@
+package aspects;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.AbstractCollection;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import org.aspectj.lang.reflect.MethodSignature;
+
+import aspects.events.BGMEvent;
+import aspects.events.EventHelper;
+import aspects.listeners.BGMListener;
+import aspects.listeners.ListenerPROVN;
+
+public aspect provenanceExtractor {
+
+	ExecutorService exec = Executors.newFixedThreadPool(16, new ThreadFactory() {
+		public Thread newThread(Runnable r) {
+			Thread t = Executors.defaultThreadFactory().newThread(r);
+			t.setDaemon(true);
+			return t;
+		}
+	});
+
+//ExecutorService exec = MoreExecutors.getExitingExecutorService(
+//      (ThreadPoolExecutor) Executors.newFixedThreadPool(8), 
+//      100_000, TimeUnit.DAYS//period after which executor will be automatically closed
+//                           //I assume that 100_000 days is enough to simulate infinity
+//);
+
+	private static Integer n = 0;
+	private static Long sum = new Long(0);
+
+	public interface Identified {
+	};
+
+	private UUID Identified.uuid;
+	public String Identified.stateSM = new String();
+
+	public void Identified.setUUID(UUID uuid) {
+		this.uuid = uuid;
+	}
+
+	public UUID Identified.getUUID() {
+		return uuid;
+	}
+
+	public void Identified.setStateSM(String state) {
+		this.stateSM = state;
+	}
+
+	public String Identified.getStateSM() {
+		return stateSM;
+	}
+
+	public static class IdentifiersManager {
+		private static Set<Class> WRAPPER_TYPES = new HashSet(
+				Arrays.asList(String.class, Boolean.class, Character.class, Byte.class, Short.class, Integer.class,
+						Long.class, Float.class, Double.class, Void.class));
+
+		// static Map<Object, UUID> objectIdentifier = new WeakHashMap<Object, UUID>();
+
+		private static boolean isWrapperType(Class clazz) {
+			return WRAPPER_TYPES.contains(clazz);
+		}
+
+		static String incrementIdentifier(Object obj) {
+			String rslt;
+			if (!Identified.class.isAssignableFrom(obj.getClass())) {
+				rslt = new UUID(obj).incrementUUID();
+			} else {
+				rslt = ((Identified) obj).getUUID().incrementUUID();
+			}
+			return rslt;
+		}
+
+		static UUID getIdentifier(Object obj) {
+			UUID rtn = null;
+//    		if(obj instanceof Identified){
+
+			if (Identified.class.isAssignableFrom(obj.getClass())) {
+				if (((Identified) obj).getUUID() == null)
+					((Identified) obj).setUUID(new UUID(obj));
+				rtn = ((Identified) obj).getUUID();
+			} else {
+				rtn = new UUID(obj);
+			}
+			return rtn;
+		}
+
+////    		System.out.println(rtn.getCompleteUUID());
+//    		long swTime= sw.elapsedTime();
+//    		System.out.println("[Parallel] "+ swTime);
+
+//    		UUID rtn = null;
+//    		if(obj instanceof Identified){
+//    			rtn = ((Identified)obj).getUUID();
+//    		}else{
+//    			rtn = objectIdentifier.get(obj);
+//    			if (rtn == null) {
+//    				rtn = new UUID(obj);
+//    				objectIdentifier.put(obj, rtn);
+//    			}
+//    		}
+//    		
+//    		return rtn;
+//    	}
+		static synchronized public String randomUUID() {
+			return UUID.randomUUID();
+		}
+
+		static public UUID newUUID(Object obj) {
+			UUID uuid = new UUID(obj);
+			return uuid;
+		}
+
+	}
+
+	public static class StateManager {
+
+		synchronized static void newState(Object obj, String state) {
+			if (Identified.class.isAssignableFrom(obj.getClass())) {
+				((Identified) obj).setStateSM(state);
+			}
+		}
+
+		synchronized static String getState(Object obj) {
+			if (obj instanceof Identified) {
+				return ((Identified) obj).getStateSM();
+			} else
+				return "noState";
+		}
+
+	}
+
+	// send the eventes
+	private static EventHelper<BGMListener> bgmm = new EventHelper<>(BGMListener.class);
+
+	// identificador de la ejecucion (del binding)
+	private static final String EXECUTION_ID = IdentifiersManager.randomUUID();
+
+	// represents the deeper level of the last method executed
+	static Integer level = 0;
+
+	// it is a boolean which allows us to know if the level has ended
+	// realmente no se como llamarlo, es algo parecido a un semaforo que me dice
+	// si el nivel ha finalizado o no.
+	static Boolean previousMethod = false;
+	static long timeNestedMethods = 0;
+
+	// por cada nivel
+
+	// <nombreClase>.<nombreMetodo>@<idMessage>
+	// <replyMessageID>
+	private static ArrayList<List<SimpleEntry<String, String>>> returnsArray;
+
+	// por cada nivel
+	// <nombreClase>.<nombreMetodo>@<idMessage>
+	// time
+	private static ArrayList<List<SimpleEntry<String, Long>>> returnsArrayTimes;
+
+	// por cada nivel
+	// <nombreClase>.<nombreMetodo>@<idMessage>
+	// <starter>
+	private static ArrayList<List<SimpleEntry<String, String>>> startersArray;
+
+	// identificadores de los objetos, por nivel
+	private static ArrayList<String> objIdArray = new ArrayList<String>();
+
+	// variable que guarda en memoria el fichero de propiedades
+	private static HashMap<String, String> propertiesMemory;
+	private static HashMap<String, List<String>> propertiesMemoryAttributes;
+
+	static {
+//		try {
+//			bgmm.addListener(new ListenerMongoDB2());
+			bgmm.addListener(new ListenerPROVN());
+
+			returnsArray = new ArrayList<List<SimpleEntry<String, String>>>();
+			startersArray = new ArrayList<List<SimpleEntry<String, String>>>();
+			returnsArrayTimes = new ArrayList<List<SimpleEntry<String, Long>>>();
+
+//			Properties properties = new Properties();
+//			properties.load(new FileInputStream("src/aspects/pp.properties"));
+			propertiesMemory = new HashMap<String, String>();
+			propertiesMemoryAttributes = new HashMap<String, List<String>>();
+			LoadProperties.loadProperties(propertiesMemory, propertiesMemoryAttributes);
+			
+//			for (Object key : properties.keySet()) {
+//				if (((String) key).contains(".attributes")) {
+//					propertiesMemoryAttributes.put((String) key,Arrays.asList(properties.getProperty((String) key).split("\\|")));
+//				} else {
+//					propertiesMemory.put((String) key, properties.getProperty((String) key));
+//				}
+//			}
+
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+	}
+
+	// identificador del mensaje (operacion)
+	private String id_msg_new = "";

@@ -1,4 +1,5 @@
 package xtendCode.generatorPROVN;
+
 import com.google.common.base.Objects;
 import java.io.File;
 import java.io.PrintStream;
@@ -13,60 +14,12 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import xtendCode.prov.Activity;
-import xtendCode.prov.Agent;
-import xtendCode.prov.Association;
-import xtendCode.prov.Attribution;
-import xtendCode.prov.Communication;
-import xtendCode.prov.Derivation;
-import xtendCode.prov.Document;
-import xtendCode.prov.Entity;
-import xtendCode.prov.Generation;
-import xtendCode.prov.IDRef;
-import xtendCode.prov.Invalidation;
-import xtendCode.prov.Membership;
-import xtendCode.prov.PAttribute;
-import xtendCode.prov.ProvPackage;
-import xtendCode.prov.Specialization;
-import xtendCode.prov.Start;
-import xtendCode.prov.Usage;
+import xtendCode.prov.*;
 
 @SuppressWarnings("all")
 public class PROVNGenerator {
-  public void generate(final String file, final String folder) {
-    try {
-      Map<String, Object> _extensionToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-      XMIResourceFactoryImpl _xMIResourceFactoryImpl = new XMIResourceFactoryImpl();
-      _extensionToFactoryMap.put("xmi", _xMIResourceFactoryImpl);
-      final ResourceSetImpl resourceSet = new ResourceSetImpl();
-      resourceSet.getPackageRegistry().put("http://www.w3.org/ns/prov", ProvPackage.eINSTANCE);
-      final Resource resource = resourceSet.getResource(URI.createURI(file), true);
-      boolean _exists = new File(("src-gen/" + folder)).exists();
-      if (_exists) {
-        File _file = new File(("src-gen/" + folder));
-        FileUtils.deleteDirectory(_file);
-      }
-      new File(("src-gen/" + folder)).mkdirs();
-      EList<EObject> _contents = resource.getContents();
-      for (final EObject documents : _contents) {
-        EList<EObject> _eContents = documents.eContents();
-        for (final EObject document : _eContents) {
-          if ((document instanceof Document)) {
-            String _id = ((Document)document).getId();
-            String _plus = ((("src-gen/" + folder) + "/") + _id);
-            String _plus_1 = (_plus + ".provn");
-            File _file_1 = new File(_plus_1);
-            PrintStream fos = new PrintStream(_file_1);
-            this.manageDocument(((Document)document), fos);
-          }
-        }
-      }
-    } catch (Throwable _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
-  }
-  
   public void manageDocument(final Document doc, final PrintStream o) {
+    o.println("\r\n\t\t\t\tdocument\r\n\t\t\t\t\tprefix prov <http://www.w3.org/ns/prov#>\r\n\t\t\t\t\tprefix tmpl <http://openprovenance.org/tmpl#>\r\n\t\t\t\t\tprefix var <http://openprovenance.org/var#>\r\n\t\t\t\t\tprefix exe <http://example.org/>\r\n\t\t\t\t\tprefix u2p <http://uml2prov.org/>\r\n\t\t\t\t\t\r\n\t\t\t\t\tbundle exe:bundle1\r\n\t\t");
     EList<Entity> _entity = doc.getEntity();
     for (final Entity entity : _entity) {
       o.println(this.manageEntity(entity));
@@ -119,6 +72,11 @@ public class PROVNGenerator {
     for (final Association waw : _wasAssociatedWith) {
       o.println(this.wawTemplate(waw));
     }
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("endBundle");
+    _builder.newLine();
+    _builder.append("endDocument");
+    o.println(_builder);
   }
   
   public CharSequence manageEntity(final Entity entity) {
@@ -758,6 +716,81 @@ public class PROVNGenerator {
         }
       }
     }
+    return _builder;
+  }
+  
+  public static void main(final String[] args) {
+    new PROVNGenerator().generate("provModelClass.xmi", "templates/class");
+    new PROVNGenerator().generate("provModelSm.xmi", "templates/state");
+    new PROVNGenerator().generate("provModelSeq.xmi", "templates/sequence");
+  }
+  
+  public void generate(final String file, final String folder) {
+    try {
+      Map<String, Object> _extensionToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+      XMIResourceFactoryImpl _xMIResourceFactoryImpl = new XMIResourceFactoryImpl();
+      _extensionToFactoryMap.put("xmi", _xMIResourceFactoryImpl);
+      final ResourceSetImpl resourceSet = new ResourceSetImpl();
+      resourceSet.getPackageRegistry().put("http://www.w3.org/ns/prov", ProvPackage.eINSTANCE);
+      final Resource resource = resourceSet.getResource(URI.createURI(file), true);
+      boolean _exists = new File(("src-gen/" + folder)).exists();
+      if (_exists) {
+        File _file = new File(("src-gen/" + folder));
+        FileUtils.deleteDirectory(_file);
+      }
+      new File(("src-gen/" + folder)).mkdirs();
+      EList<EObject> _contents = resource.getContents();
+      for (final EObject documents : _contents) {
+        EList<EObject> _eContents = documents.eContents();
+        for (final EObject document : _eContents) {
+          if ((document instanceof Document)) {
+            String _id = ((Document)document).getId();
+            String _plus = ((("src-gen/" + folder) + "/") + _id);
+            String _plus_1 = (_plus + ".provn");
+            File _file_1 = new File(_plus_1);
+            PrintStream fos = new PrintStream(_file_1);
+            this.manageDocument(((Document)document), fos);
+          }
+        }
+      }
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
+  public CharSequence header() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("document");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("prefix prov <http://www.w3.org/ns/prov#>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("prefix tmpl <http://openprovenance.org/tmpl#>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("prefix var <http://openprovenance.org/var#>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("prefix exe <http://example.org/>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("prefix u2p <http://uml2prov.org/>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("bundle exe:bundle1");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence footnote() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("endBundle");
+    _builder.newLine();
+    _builder.append("endDocument");
+    _builder.newLine();
     return _builder;
   }
 }

@@ -99,7 +99,7 @@ public class C2PROV {
 	 */
 	public C2PROV() throws IOException {
 		properties = new Properties();
-		properties.load(new FileInputStream("src/main/resources/properties/C2PROV.properties"));
+		properties.load(new FileInputStream("resources/properties/C2PROV.properties"));
 
 		//properties.load(getClass().getResourceAsStream("/properties/C2PROV.properties"));
 		//properties.load(getFileURL("${basedir}/src/main/resource/properties/C2PROV.properties").openStream());
@@ -167,9 +167,9 @@ public class C2PROV {
 		launcher.addInModel(inModel, "IN", "UML");
 		launcher.addOutModel(outModel, "OUT", "PROV");
 		
-		return launcher.launch(ILauncher.RUN_MODE, monitor, Collections.<String, Object> emptyMap(), (Object[]) getModulesList());
+//		return launcher.launch(ILauncher.RUN_MODE, monitor, Collections.<String, Object> emptyMap(), (Object[]) getModulesList());
 
-		//return launcher.launch(ILauncher.RUN_MODE, monitor, launcherOptions, (Object[]) getModulesList());
+		return launcher.launch(ILauncher.RUN_MODE, monitor, launcherOptions, (Object[]) getModulesList());
 		
 		//launcher.launch(ILauncher.RUN_MODE, new NullProgressMonitor(), Collections.<String, Object> emptyMap(), loadedModule);
 

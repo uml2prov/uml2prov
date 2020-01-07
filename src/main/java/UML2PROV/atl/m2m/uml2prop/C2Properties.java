@@ -97,7 +97,7 @@ public class C2Properties {
 	public C2Properties() throws IOException {
 		properties = new Properties();
 		//properties.load(getClass().getResourceAsStream("/properties/C2Properties.properties"));
-		properties.load(new FileInputStream("src/main/resources/properties/C2Properties.properties"));
+		properties.load(new FileInputStream("resources/properties/C2Properties.properties"));
 		//properties.load(getFileURL("/u2p/src/main/resources/properties/C2Properties.properties").openStream());
 		
 //		EPackage.Registry.INSTANCE.put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
