@@ -4,6 +4,7 @@ import UML2PROV.utilities.AspectConstructor;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 import org.apache.commons.io.FileUtils;
@@ -46,6 +47,7 @@ public class AspectGenerator {
       }
       new File("src-gen/aspects/events").mkdirs();
       new File("src-gen/aspects/listeners").mkdirs();
+      new File("src-gen/aspects/dependencies").mkdirs();
       File _file_1 = new File("src-gen/aspects/provenanceExtractor.aj");
       PrintStream provenanceExtractorAJ = new PrintStream(_file_1);
       provenanceExtractorAJ.println(AspectGenerator.parents(interfaceImpl));
@@ -90,9 +92,10 @@ public class AspectGenerator {
       provenanceExtractorAJ = _printStream_4;
       provenanceExtractorAJ.println(AspectConstructor.generateBGMListener());
       provenanceExtractorAJ.close();
-      File _file_7 = new File("src/main/resources/codeBlocks/org.aspectj.runtime_1.9.2.201811011643.jar");
-      File _file_8 = new File("src-gen/aspects/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar");
-      FileUtils.copyFile(_file_7, _file_8);
+      File _file_7 = new File("src-gen/aspects/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar");
+      FileOutputStream target = new FileOutputStream(_file_7);
+      AspectConstructor.copiar(AspectConstructor.getJarDependency(), target);
+      target.close();
     } catch (Throwable _e) {
       throw Exceptions.sneakyThrow(_e);
     }
@@ -147,13 +150,17 @@ public class AspectGenerator {
   }
   
   public static StringBuffer aroundBlock(final EObject root) {
-    StringBuffer result = new StringBuffer();
-    result.append("Object around(Identified targetIdentified): target(targetIdentified) &&  !execution(* *.getUUID()) && !execution(* *.setUUID()) && (");
-    result.append(AspectGenerator.pointCutsOperations(root, true));
-    result.append("){\n");
-    result.append(AspectConstructor.codeInsideAround());
-    result.append("}");
-    return result;
+    try {
+      StringBuffer result = new StringBuffer();
+      result.append("Object around(Identified targetIdentified): target(targetIdentified) &&  !execution(* *.getUUID()) && !execution(* *.setUUID()) && (");
+      result.append(AspectGenerator.pointCutsOperations(root, true));
+      result.append("){\n");
+      result.append(AspectConstructor.codeInsideAround());
+      result.append("}");
+      return result;
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public static StringBuffer pointCutsOperations(final EObject root, final boolean searchForNestedNodes) {
@@ -188,25 +195,33 @@ public class AspectGenerator {
   }
   
   public static StringBuffer beforeBlock(final EObject root) {
-    StringBuffer result = new StringBuffer();
-    result.append(
-      "before(Identified targetIdentified) : this(targetIdentified) &&  !execution(* *.setUUID()) && !execution(* *.getUUID()) && (");
-    result.append("captureNews0()");
-    result.append("){\n");
-    result.append(AspectConstructor.codeInsideBefore());
-    result.append("}");
-    return result;
+    try {
+      StringBuffer result = new StringBuffer();
+      result.append(
+        "before(Identified targetIdentified) : this(targetIdentified) &&  !execution(* *.setUUID()) && !execution(* *.getUUID()) && (");
+      result.append("captureNews0()");
+      result.append("){\n");
+      result.append(AspectConstructor.codeInsideBefore());
+      result.append("}");
+      return result;
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public static StringBuffer afterBlock(final EObject root) {
-    StringBuffer result = new StringBuffer();
-    result.append(
-      "after(Identified targetIdentified) : this(targetIdentified) &&  !execution(* *.setUUID()) && !execution(* *.getUUID()) && (");
-    result.append("captureNews0()");
-    result.append("){\n");
-    result.append(AspectConstructor.codeInsideAfter());
-    result.append("}");
-    return result;
+    try {
+      StringBuffer result = new StringBuffer();
+      result.append(
+        "after(Identified targetIdentified) : this(targetIdentified) &&  !execution(* *.setUUID()) && !execution(* *.getUUID()) && (");
+      result.append("captureNews0()");
+      result.append("){\n");
+      result.append(AspectConstructor.codeInsideAfter());
+      result.append("}");
+      return result;
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public static StringBuffer news(final EObject root, final boolean searchForNestedNodes) {

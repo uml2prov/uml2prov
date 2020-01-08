@@ -11,6 +11,7 @@
 package UML2PROV.atl.m2m.uml2prov;
 
 
+import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -99,9 +100,9 @@ public class C2PROV {
 	 */
 	public C2PROV() throws IOException {
 		properties = new Properties();
-		properties.load(new FileInputStream("resources/properties/C2PROV.properties"));
+//		properties.load(new FileInputStream("resources/properties/C2PROV.properties"));
 
-		//properties.load(getClass().getResourceAsStream("/properties/C2PROV.properties"));
+		properties.load(getClass().getResourceAsStream("/resources/properties/C2PROV.properties"));
 		//properties.load(getFileURL("${basedir}/src/main/resource/properties/C2PROV.properties").openStream());
 		EPackage.Registry.INSTANCE.put(getMetamodelUri("UML"), org.eclipse.uml2.uml.UMLPackage.eINSTANCE);
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
@@ -124,8 +125,9 @@ public class C2PROV {
 	 	IReferenceModel umlMetamodel = factory.newReferenceModel();
 		injector.inject(umlMetamodel, getMetamodelUri("UML"));
 	 	IReferenceModel provMetamodel = factory.newReferenceModel();
-	 	injector.inject(provMetamodel, new FileInputStream(getMetamodelUri("PROV")),null);
-		//injector.inject(provMetamodel, getMetamodelUri("PROV"));
+	 	InputStream is = getClass().getResourceAsStream(getMetamodelUri("PROV"));
+	 	injector.inject(provMetamodel, is,null);
+//	 	injector.inject(provMetamodel, new FileInputStream(getMetamodelUri("PROV")),null);
 		this.inModel = factory.newModel(umlMetamodel);
 		injector.inject(inModel, inModelPath);
 		this.outModel = factory.newModel(provMetamodel);
@@ -192,10 +194,10 @@ public class C2PROV {
 		String modulesList = properties.getProperty("C2PROV.modules");
 		if (modulesList != null) {
 			String[] moduleNames = modulesList.split(",");
-			modules = new FileInputStream[moduleNames.length];
+			modules = new InputStream[moduleNames.length];
 			for (int i = 0; i < moduleNames.length; i++) {
 				String asmModulePath = new Path(moduleNames[i].trim()).removeFileExtension().addFileExtension("asm").toString();
-				modules[i] = new FileInputStream(asmModulePath);
+				modules[i] = getClass().getResourceAsStream(asmModulePath);
 			}
 		}
 		return modules;

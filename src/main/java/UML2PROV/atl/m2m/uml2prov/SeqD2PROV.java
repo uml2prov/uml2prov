@@ -99,7 +99,9 @@ public class SeqD2PROV {
 	 */
 	public SeqD2PROV() throws IOException {
 		properties = new Properties();
-		properties.load(new FileInputStream("resources/properties/SeqD2PROV.properties"));
+		properties.load(getClass().getResourceAsStream("/resources/properties/SeqD2PROV.properties"));
+
+//		properties.load(new FileInputStream("resources/properties/SeqD2PROV.properties"));
 //		properties.load(AspectConstructor.class.getResourceAsStream("resources/properties/SeqD2PROV.properties"));
 
 
@@ -127,8 +129,8 @@ public class SeqD2PROV {
 		injector.inject(umlMetamodel, getMetamodelUri("UML"));
 	 	IReferenceModel provMetamodel = factory.newReferenceModel();
 		//injector.inject(provMetamodel, getMetamodelUri("PROV"));
-	 	injector.inject(provMetamodel, new FileInputStream(getMetamodelUri("PROV")),null);
-
+	 	InputStream is = getClass().getResourceAsStream(getMetamodelUri("PROV"));
+	 	injector.inject(provMetamodel, is,null);
 		this.inModel = factory.newModel(umlMetamodel);
 		injector.inject(inModel, inModelPath);
 		this.outModel = factory.newModel(provMetamodel);
@@ -188,10 +190,10 @@ public class SeqD2PROV {
 		String modulesList = properties.getProperty("SeqD2PROV.modules");
 		if (modulesList != null) {
 			String[] moduleNames = modulesList.split(",");
-			modules = new FileInputStream[moduleNames.length];
+			modules = new InputStream[moduleNames.length];
 			for (int i = 0; i < moduleNames.length; i++) {
 				String asmModulePath = new Path(moduleNames[i].trim()).removeFileExtension().addFileExtension("asm").toString();
-				modules[i] = new FileInputStream(asmModulePath);
+				modules[i] = getClass().getResourceAsStream(asmModulePath);
 			}
 		}
 		return modules;

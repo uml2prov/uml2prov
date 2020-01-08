@@ -96,10 +96,8 @@ public class C2Properties {
 	 */
 	public C2Properties() throws IOException {
 		properties = new Properties();
-		//properties.load(getClass().getResourceAsStream("/properties/C2Properties.properties"));
-		properties.load(new FileInputStream("resources/properties/C2Properties.properties"));
-		//properties.load(getFileURL("/u2p/src/main/resources/properties/C2Properties.properties").openStream());
-		
+		properties.load(getClass().getResourceAsStream("/resources/properties/C2Properties.properties"));
+
 //		EPackage.Registry.INSTANCE.put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
 	    EPackage.Registry.INSTANCE.put(getMetamodelUri("UML"), org.eclipse.uml2.uml.UMLPackage.eINSTANCE);		
 
@@ -128,7 +126,10 @@ public class C2Properties {
 	 	IReferenceModel propMetamodel = factory.newReferenceModel();
 	 	
 		//injector.inject(propMetamodel, getMetamodelUri("PROP"));
-	 	injector.inject(propMetamodel, new FileInputStream(getMetamodelUri("PROP")),null);
+//	 	injector.inject(propMetamodel, new FileInputStream(getMetamodelUri("PROP")),null);
+	 	InputStream is = getClass().getResourceAsStream(getMetamodelUri("PROP"));
+	 	injector.inject(propMetamodel, is,null);
+//	 	
 	 	
 	 	
 	 	this.inModel = factory.newModel(umlMetamodel);
@@ -189,10 +190,10 @@ public class C2Properties {
 		String modulesList = properties.getProperty("C2Properties.modules");
 		if (modulesList != null) {
 			String[] moduleNames = modulesList.split(",");
-			modules = new FileInputStream[moduleNames.length];
+			modules = new InputStream[moduleNames.length];
 			for (int i = 0; i < moduleNames.length; i++) {
 				String asmModulePath = new Path(moduleNames[i].trim()).removeFileExtension().addFileExtension("asm").toString();
-				modules[i] = new FileInputStream(asmModulePath);
+				modules[i] = getClass().getResourceAsStream(asmModulePath);
 			}
 		}
 		return modules;
