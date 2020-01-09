@@ -47,8 +47,8 @@ public class AspectGenerator {
       }
       new File("src-gen/aspects/events").mkdirs();
       new File("src-gen/aspects/listeners").mkdirs();
-      new File("src-gen/aspects/dependencies").mkdirs();
-      File _file_1 = new File("src-gen/aspects/provenanceExtractor.aj");
+      new File("src-gen/dependencies").mkdirs();
+      File _file_1 = new File("src-gen/aspects/BGMEventInstrumenter.aj");
       PrintStream provenanceExtractorAJ = new PrintStream(_file_1);
       provenanceExtractorAJ.println(AspectGenerator.parents(interfaceImpl));
       Iterable<Model> _filter = Iterables.<Model>filter(res.getContents(), Model.class);
@@ -87,12 +87,12 @@ public class AspectGenerator {
       provenanceExtractorAJ = _printStream_3;
       provenanceExtractorAJ.println(AspectConstructor.generateEventHelper());
       provenanceExtractorAJ.close();
-      File _file_6 = new File("src-gen/aspects/listeners/BGMListener.java");
+      File _file_6 = new File("src-gen/aspects/listeners/BGMEventListener.java");
       PrintStream _printStream_4 = new PrintStream(_file_6);
       provenanceExtractorAJ = _printStream_4;
-      provenanceExtractorAJ.println(AspectConstructor.generateBGMListener());
+      provenanceExtractorAJ.println(AspectConstructor.generateBGMEventListener());
       provenanceExtractorAJ.close();
-      File _file_7 = new File("src-gen/aspects/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar");
+      File _file_7 = new File("src-gen/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar");
       FileOutputStream target = new FileOutputStream(_file_7);
       AspectConstructor.copiar(AspectConstructor.getJarDependency(), target);
       target.close();
@@ -358,7 +358,7 @@ public class AspectGenerator {
     _builder.newLine();
     _builder.append("import aspects.events.EventHelper;");
     _builder.newLine();
-    _builder.append("import aspects.listeners.BGMListener;");
+    _builder.append("import aspects.listeners.BGMEventListener;");
     _builder.newLine();
     _builder.append("import aspects.listeners.");
     String _get = interfImp.split("\\.")[0];
@@ -366,7 +366,7 @@ public class AspectGenerator {
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
-    _builder.append("public aspect provenanceExtractor {");
+    _builder.append("public aspect BGMEventInstrumenter {");
     _builder.newLine();
     _builder.newLine();
     _builder.append("\t");
@@ -662,7 +662,7 @@ public class AspectGenerator {
     _builder.append("// send the eventes");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("private static EventHelper<BGMListener> bgmm = new EventHelper<>(BGMListener.class);");
+    _builder.append("private static EventHelper<BGMEventListener> bgmm = new EventHelper<>(BGMEventListener.class);");
     _builder.newLine();
     _builder.newLine();
     _builder.append("\t");
