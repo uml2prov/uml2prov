@@ -1,7 +1,7 @@
 package aspects.listeners;
 import aspects.events.BGMEvent;
 
-public interface BGMListener {
+public interface BGMEventListener {
 	
 	public void newValueBinding(BGMEvent e);
 	public void newBinding(BGMEvent e);

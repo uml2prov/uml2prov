@@ -124,7 +124,7 @@ public class AspectConstructor {
 
 	}
 
-	public static String generateBGMListener() throws IOException {
+	public static String generateBGMEventListener() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
 //			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/BGMListener.java")),
@@ -134,7 +134,8 @@ public class AspectConstructor {
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/BGMListener.java.txt");
+				
+		return stringFromFile("/resources/codeBlocks/BGMEventListener.java.txt");
 
 	}
 

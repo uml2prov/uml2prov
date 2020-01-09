@@ -32,7 +32,7 @@ public class Principal {
 
 			Options options = new Options();
 			options.addOption("m", true, "UML model addressed by UML2PROV.");
-			options.addOption("i", true, "Java class implementing BGMListener. This class sets the configuration for managing and storing bindings.");
+			options.addOption("i", true, "Java class implementing BGMEventListener. This class sets the configuration for managing and storing bindings.");
 
 			CommandLineParser parser = new DefaultParser();
 			CommandLine line = parser.parse(options, args);
@@ -48,7 +48,7 @@ public class Principal {
 				smd2prov(model);
 				class2prop(model);
 				
-				FileUtils.copyFile(new File(interfaceImplemented), new File("src-gen/aspects/listeners/"+interfaceImplemented));
+				FileUtils.copyFile(new File(interfaceImplemented), new File("src-gen/"+interfaceImplemented));
 
 
 				new File(CLASSPROVFILEPATH).delete();
@@ -59,7 +59,7 @@ public class Principal {
 			}else if(!line.hasOption("m")){
 				System.out.println("Please insert a UML model using parameter -m");
 			}else if(!line.hasOption("i")){
-				System.out.println("Please insert a java class implementing the interface BGMListenerInterface -i");
+				System.out.println("Please insert a java class implementing the interface BGMEventListener -i");
 			}
 
 		} catch (Exception e) {

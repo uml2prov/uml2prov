@@ -20,10 +20,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 import aspects.events.BGMEvent;
 import aspects.events.EventHelper;
-import aspects.listeners.BGMListener;
+import aspects.listeners.BGMEventListener;
 import aspects.listeners.ListenerPROVN;
 
-public aspect provenanceExtractor {
+public aspect BGMEventInstrumenter {
 
 	ExecutorService exec = Executors.newFixedThreadPool(16, new ThreadFactory() {
 		public Thread newThread(Runnable r) {
@@ -145,7 +145,7 @@ public aspect provenanceExtractor {
 	}
 
 	// send the eventes
-	private static EventHelper<BGMListener> bgmm = new EventHelper<>(BGMListener.class);
+	private static EventHelper<BGMEventListener> bgmm = new EventHelper<>(BGMEventListener.class);
 
 	// identificador de la ejecucion (del binding)
 	private static final String EXECUTION_ID = IdentifiersManager.randomUUID();
