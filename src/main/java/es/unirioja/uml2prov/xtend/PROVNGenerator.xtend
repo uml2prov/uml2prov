@@ -124,15 +124,15 @@ class PROVNGenerator {
 		val resource = resourceSet.getResource(URI.createURI(file), true)
 
 		//vacio y creo de nuevo la ruta
-		if(new File("src-gen/"+folder).exists)	FileUtils.deleteDirectory(new File("src-gen/"+folder));
-		new File("src-gen/"+folder).mkdirs;
+		if(new File(folder).exists)	FileUtils.deleteDirectory(new File(folder));
+		new File(folder).mkdirs;
 
 
 		for (documents : resource.contents) {
 			// nuevo fichero
 			for (document : documents.eContents) {			
 				if (document instanceof Document) {
-					var fos = new PrintStream(new File("src-gen/"+folder+"/"+document.id+".provn"));
+					var fos = new PrintStream(new File(folder+"/"+document.id+".provn"));
 					manageDocument(document, fos)
 				}
 

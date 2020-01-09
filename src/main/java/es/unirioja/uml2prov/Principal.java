@@ -33,26 +33,32 @@ public class Principal {
 
 	public static void main(String[] args) {
 		try {
-
+			String outputDirectory = "src-gen";
+			
 			Options options = new Options();
 			options.addOption("m", true, "UML model addressed by UML2PROV.");
 			options.addOption("i", true, "Java class implementing BGMEventListener. This class sets the configuration for managing and storing bindings.");
+			options.addOption("o", true, "Output directory");
 
 			CommandLineParser parser = new DefaultParser();
 			CommandLine line = parser.parse(options, args);
+			
+			if(line.hasOption("o")) {
+				outputDirectory = line.getOptionValue("o");
+			}
 			
 			if (line.hasOption("m") && line.hasOption("i")) {
 				String model= line.getOptionValue("m");
 				String interfaceImplemented= line.getOptionValue("i");
 				String nameInterface = new File(interfaceImplemented).getName();
 
-				AspectGenerator.generateBGM(model,nameInterface);
-				class2prov(model);
-				seq2prov(model);
-				smd2prov(model);
-				class2prop(model);
+				AspectGenerator.generateBGM(model,nameInterface, outputDirectory);
+				class2prov(model, outputDirectory+"/templates/class");
+				seq2prov(model, outputDirectory+"/templates/sequence");
+				smd2prov(model, outputDirectory+"/templates/state");
+				class2prop(model, outputDirectory);
 				
-				FileUtils.copyFile(new File(interfaceImplemented), new File("src-gen/"+interfaceImplemented));
+				FileUtils.copyFile(new File(interfaceImplemented), new File(outputDirectory+"/"+interfaceImplemented));
 
 
 				new File(CLASSPROVFILEPATH).delete();
@@ -75,7 +81,7 @@ public class Principal {
 	
 	
 	
-	public static void class2prov(String model)
+	public static void class2prov(String model, String outputDirectory)
 			throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		try {
 			C2PROV runner2 = new C2PROV();
@@ -83,7 +89,7 @@ public class Principal {
 			runner2.doC2PROV(null);
 			runner2.saveModels(CLASSPROVFILEPATH);
 
-			new PROVNGenerator().generate(CLASSPROVFILEPATH, "templates/class");
+			new PROVNGenerator().generate(CLASSPROVFILEPATH, outputDirectory);
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -108,7 +114,7 @@ public class Principal {
 		}
 	}
 
-	public static void seq2prov(String model)
+	public static void seq2prov(String model, String outputDirectory)
 			throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		try {
 			SeqD2PROV runnerSeq = new SeqD2PROV();
@@ -116,7 +122,7 @@ public class Principal {
 			runnerSeq.doSeqD2PROV(null);
 			runnerSeq.saveModels(SEQPROVFILEPATH);
 
-			new PROVNGenerator().generate(SEQPROVFILEPATH, "templates/sequence");
+			new PROVNGenerator().generate(SEQPROVFILEPATH, outputDirectory);
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -138,7 +144,7 @@ public class Principal {
 		}
 	}
 
-	public static void smd2prov(String model) {
+	public static void smd2prov(String model, String outputDirectory) {
 		try {
 			SMD2PROV runnerSM;
 			runnerSM = new SMD2PROV();
@@ -147,7 +153,7 @@ public class Principal {
 			runnerSM.doSMD2PROV(null);
 			runnerSM.saveModels(SMPROVFILEPATH);
 
-			new PROVNGenerator().generate(SMPROVFILEPATH, "templates/state");
+			new PROVNGenerator().generate(SMPROVFILEPATH, outputDirectory);
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -174,7 +180,7 @@ public class Principal {
 		}
 	}
 
-	public static void class2prop(String model)
+	public static void class2prop(String model, String outputDirectory)
 			throws IOException, ParserConfigurationException, SAXException, TransformerException {
 		try {
 			C2Properties runnerProp = new C2Properties();
@@ -183,7 +189,7 @@ public class Principal {
 			runnerProp.doC2Properties(null);
 			runnerProp.saveModels(PROPFILEPATH);
 
-			PropertiesGenerator.generateProperties(PROPFILEPATH);
+			PropertiesGenerator.generateProperties(PROPFILEPATH,outputDirectory);
 
 //			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

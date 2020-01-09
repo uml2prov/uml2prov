@@ -17,13 +17,8 @@ import org.eclipse.uml2.uml.resource.UMLResource
 
 class AspectGenerator {
 
-
-	def static void main(String[] args) {
-		generateBGM("Stack.uml","ListenerPROVN.java");
-	}
 	
-	
-	def static void generateBGM(String propertiesFile, String interfaceImpl){
+	def static void generateBGM(String propertiesFile, String interfaceImpl, String outputDirectory){
 
 //		Resource.Factory.Registry.INSTANCE.extensionToFactoryMap.put("uml", new XMIResourceFactoryImpl);
 //		val resourceSet = new ResourceSetImpl
@@ -44,14 +39,14 @@ class AspectGenerator {
 		var res = set.getResource(URI.createFileURI(propertiesFile), true);
 
 		// vacio y creo de nuevo la ruta
-		if(new File("src-gen/aspect").exists) FileUtils.deleteDirectory(new File("src-gen/aspects"));
-		new File("src-gen/aspects/events").mkdirs;
-		new File("src-gen/aspects/listeners").mkdirs;
+		if(new File(outputDirectory+"/aspect").exists) FileUtils.deleteDirectory(new File(outputDirectory+"/aspects"));
+		new File(outputDirectory+"/aspects/events").mkdirs;
+		new File(outputDirectory+"/aspects/listeners").mkdirs;
 //		new File("src-gen/aspects/dependencies").mkdirs;
-		new File("src-gen/dependencies").mkdirs;
+		new File(outputDirectory+"/dependencies").mkdirs;
 		
 
-		var provenanceExtractorAJ = new PrintStream(new File("src-gen/aspects/BGMEventInstrumenter.aj"));
+		var provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/BGMEventInstrumenter.aj"));
 //		provenanceExtractorAJ.println(AspectConstructor.codeVariablesDeclarationAJ());
 		provenanceExtractorAJ.println(parents(interfaceImpl))
 
@@ -73,25 +68,25 @@ class AspectGenerator {
 //		provenanceExtractorAJ.println(AspectConstructor.generateStateManager)
 //		provenanceExtractorAJ.close;
 		
-		provenanceExtractorAJ = new PrintStream(new File("src-gen/aspects/UML2PROVTreeMap.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/UML2PROVTreeMap.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateUML2PROVTreeMap)
 		provenanceExtractorAJ.close;
 		
-		provenanceExtractorAJ = new PrintStream(new File("src-gen/aspects/UUID.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/UUID.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateUUID)
 		provenanceExtractorAJ.close;
 
-		provenanceExtractorAJ = new PrintStream(new File("src-gen/aspects/events/BGMEvent.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/events/BGMEvent.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateBGMEvent)
 		provenanceExtractorAJ.close;
 
 
-		provenanceExtractorAJ = new PrintStream(new File("src-gen/aspects/events/EventHelper.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/events/EventHelper.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateEventHelper)
 		provenanceExtractorAJ.close;
 
 
-		provenanceExtractorAJ = new PrintStream(new File("src-gen/aspects/listeners/BGMEventListener.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/listeners/BGMEventListener.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateBGMEventListener)
 		provenanceExtractorAJ.close;
 
@@ -99,7 +94,7 @@ class AspectGenerator {
 //		provenanceExtractorAJ.println(AspectConstructor.generateListenerPROVN)
 //		provenanceExtractorAJ.close;
 		
-		var target = new FileOutputStream(new File("src-gen/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar"));
+		var target = new FileOutputStream(new File(outputDirectory+"/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar"));
 		AspectConstructor.copiar(AspectConstructor.jarDependency,target);
 		target.close();
 		

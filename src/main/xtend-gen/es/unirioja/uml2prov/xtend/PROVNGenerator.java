@@ -749,19 +749,19 @@ public class PROVNGenerator {
       final ResourceSetImpl resourceSet = new ResourceSetImpl();
       resourceSet.getPackageRegistry().put("http://www.w3.org/ns/prov", ProvPackage.eINSTANCE);
       final Resource resource = resourceSet.getResource(URI.createURI(file), true);
-      boolean _exists = new File(("src-gen/" + folder)).exists();
+      boolean _exists = new File(folder).exists();
       if (_exists) {
-        File _file = new File(("src-gen/" + folder));
+        File _file = new File(folder);
         FileUtils.deleteDirectory(_file);
       }
-      new File(("src-gen/" + folder)).mkdirs();
+      new File(folder).mkdirs();
       EList<EObject> _contents = resource.getContents();
       for (final EObject documents : _contents) {
         EList<EObject> _eContents = documents.eContents();
         for (final EObject document : _eContents) {
           if ((document instanceof Document)) {
             String _id = ((Document)document).getId();
-            String _plus = ((("src-gen/" + folder) + "/") + _id);
+            String _plus = ((folder + "/") + _id);
             String _plus_1 = (_plus + ".provn");
             File _file_1 = new File(_plus_1);
             PrintStream fos = new PrintStream(_file_1);

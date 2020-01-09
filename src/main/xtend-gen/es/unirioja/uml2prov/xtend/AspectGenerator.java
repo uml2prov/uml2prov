@@ -27,11 +27,7 @@ import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 
 @SuppressWarnings("all")
 public class AspectGenerator {
-  public static void main(final String[] args) {
-    AspectGenerator.generateBGM("Stack.uml", "ListenerPROVN.java");
-  }
-  
-  public static void generateBGM(final String propertiesFile, final String interfaceImpl) {
+  public static void generateBGM(final String propertiesFile, final String interfaceImpl, final String outputDirectory) {
     try {
       ResourceSetImpl set = new ResourceSetImpl();
       set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
@@ -40,15 +36,15 @@ public class AspectGenerator {
       Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, 
         UMLResource.Factory.INSTANCE);
       Resource res = set.getResource(URI.createFileURI(propertiesFile), true);
-      boolean _exists = new File("src-gen/aspect").exists();
+      boolean _exists = new File((outputDirectory + "/aspect")).exists();
       if (_exists) {
-        File _file = new File("src-gen/aspects");
+        File _file = new File((outputDirectory + "/aspects"));
         FileUtils.deleteDirectory(_file);
       }
-      new File("src-gen/aspects/events").mkdirs();
-      new File("src-gen/aspects/listeners").mkdirs();
-      new File("src-gen/dependencies").mkdirs();
-      File _file_1 = new File("src-gen/aspects/BGMEventInstrumenter.aj");
+      new File((outputDirectory + "/aspects/events")).mkdirs();
+      new File((outputDirectory + "/aspects/listeners")).mkdirs();
+      new File((outputDirectory + "/dependencies")).mkdirs();
+      File _file_1 = new File((outputDirectory + "/aspects/BGMEventInstrumenter.aj"));
       PrintStream provenanceExtractorAJ = new PrintStream(_file_1);
       provenanceExtractorAJ.println(AspectGenerator.parents(interfaceImpl));
       Iterable<Model> _filter = Iterables.<Model>filter(res.getContents(), Model.class);
@@ -67,32 +63,32 @@ public class AspectGenerator {
       }
       provenanceExtractorAJ.println(AspectConstructor.codeMethodsDeclarationAJ());
       provenanceExtractorAJ.close();
-      File _file_2 = new File("src-gen/aspects/UML2PROVTreeMap.java");
+      File _file_2 = new File((outputDirectory + "/aspects/UML2PROVTreeMap.java"));
       PrintStream _printStream = new PrintStream(_file_2);
       provenanceExtractorAJ = _printStream;
       provenanceExtractorAJ.println(AspectConstructor.generateUML2PROVTreeMap());
       provenanceExtractorAJ.close();
-      File _file_3 = new File("src-gen/aspects/UUID.java");
+      File _file_3 = new File((outputDirectory + "/aspects/UUID.java"));
       PrintStream _printStream_1 = new PrintStream(_file_3);
       provenanceExtractorAJ = _printStream_1;
       provenanceExtractorAJ.println(AspectConstructor.generateUUID());
       provenanceExtractorAJ.close();
-      File _file_4 = new File("src-gen/aspects/events/BGMEvent.java");
+      File _file_4 = new File((outputDirectory + "/aspects/events/BGMEvent.java"));
       PrintStream _printStream_2 = new PrintStream(_file_4);
       provenanceExtractorAJ = _printStream_2;
       provenanceExtractorAJ.println(AspectConstructor.generateBGMEvent());
       provenanceExtractorAJ.close();
-      File _file_5 = new File("src-gen/aspects/events/EventHelper.java");
+      File _file_5 = new File((outputDirectory + "/aspects/events/EventHelper.java"));
       PrintStream _printStream_3 = new PrintStream(_file_5);
       provenanceExtractorAJ = _printStream_3;
       provenanceExtractorAJ.println(AspectConstructor.generateEventHelper());
       provenanceExtractorAJ.close();
-      File _file_6 = new File("src-gen/aspects/listeners/BGMEventListener.java");
+      File _file_6 = new File((outputDirectory + "/aspects/listeners/BGMEventListener.java"));
       PrintStream _printStream_4 = new PrintStream(_file_6);
       provenanceExtractorAJ = _printStream_4;
       provenanceExtractorAJ.println(AspectConstructor.generateBGMEventListener());
       provenanceExtractorAJ.close();
-      File _file_7 = new File("src-gen/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar");
+      File _file_7 = new File((outputDirectory + "/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar"));
       FileOutputStream target = new FileOutputStream(_file_7);
       AspectConstructor.copiar(AspectConstructor.getJarDependency(), target);
       target.close();

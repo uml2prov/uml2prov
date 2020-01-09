@@ -15,10 +15,6 @@ import org.eclipse.xtext.xbase.lib.Exceptions;
 
 @SuppressWarnings("all")
 public class PropertiesGenerator {
-  public static void main(final String[] args) {
-    PropertiesGenerator.generateProperties("provModelProperties.xmi");
-  }
-  
   public static CharSequence inicio() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package aspects;");
@@ -76,7 +72,7 @@ public class PropertiesGenerator {
     return _builder;
   }
   
-  public static void generateProperties(final String propertiesFile) {
+  public static void generateProperties(final String propertiesFile, final String outputDirectory) {
     try {
       Map<String, Object> _extensionToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
       XMIResourceFactoryImpl _xMIResourceFactoryImpl = new XMIResourceFactoryImpl();
@@ -84,7 +80,7 @@ public class PropertiesGenerator {
       final ResourceSetImpl resourceSet = new ResourceSetImpl();
       resourceSet.getPackageRegistry().put("http://www.w3.org/ns/properties", PropertiesPackage.eINSTANCE);
       final Resource resource = resourceSet.getResource(URI.createURI(propertiesFile), true);
-      PrintStream propertiesPS = new PrintStream("src-gen/aspects/LoadProperties.java");
+      PrintStream propertiesPS = new PrintStream((outputDirectory + "/aspects/LoadProperties.java"));
       propertiesPS.println(PropertiesGenerator.inicio());
       EList<EObject> _contents = resource.getContents();
       for (final EObject documents : _contents) {
