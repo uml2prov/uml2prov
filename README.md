@@ -20,12 +20,11 @@ The combination of the PROV-templates with the bindings providing values for the
 
 ## How to get UML2PROV
 
-This UML2PROV reference implementation is a java project available on GitHub ([https://github.com/uml2prov/uml2prov.git](https://github.com/uml2prov/uml2prov.git)). Alternatively, users can download the zip archive available at [http://uml2prov.unirioja.es/uml2prov_release_0.1v.zip](http://uml2prov.unirioja.es/uml2prov_release_0.1v.zip) with the code already compiled and containing a binary executable and a simple example. This archive includes:
+This UML2PROV reference implementation is a java project available on GitHub ([https://github.com/uml2prov/uml2prov.git](https://github.com/uml2prov/uml2prov.git)). Alternatively, users can download the zip archive available at [http://uml2prov.unirioja.es/uml2prov_release_0.2v.zip](http://uml2prov.unirioja.es/uml2prov_release_0.2v.zip) with the code already compiled and containing a binary executable and a simple example. This archive includes:
 
 - _uml2prov.jar_:  the executable UML2PROV tool. Dependencies for this executable must be located in a subdirectory named *uml2prov_lib*
 - *uml2prov_lib*: directory with dependencies (this directory must be in the same folder as uml2pov.jar).
 - _model.profile.uml_: UML profile used to stereotype UML operations in the UML class diagram.
-- _resources_: directory with resources (this directory must be in the same folder as uml2pov.jar).
 - _examples/apps_: directory with the source code of an example application.
 - _examples/models_: directory with UML models describing the example application.
 - _examples/listeners_: directory with java implementations of the `BGMEventListener` java interface.
@@ -64,11 +63,13 @@ To obtain these UML2PROV artefacts, execute the following command:
 ```sh
 java -jar uml2prov.jar -m <path_to_UML_diagrams> -i <path_to_BGMEventListener>
 ```
-This executable requires two mandatory arguments:
+This executable requires three mandatory arguments:
 
 `-m` | Path to the UML diagrams serialized in XMI or ULML.
 
-`-i` | Path to a java class implementing the `BGMEventListener` interface. This class specifies how to manage the bindings collected during the execution of the application (see in Appendix A how to implement a class for managing bindings).
+`-i` | Path to the directory containing the listener source class (a java file inside its packages directories). This class has to implement the `BGMEventListener` interface. This class specifies how to manage the bindings collected during the execution of the application (see in Appendix A how to implement a class for managing bindings).
+
+`-l` | Fully-qualified name of the listener class.
 
 Optionally, the output directory, may be specified using option `-o`:
 
@@ -76,7 +77,7 @@ Optionally, the output directory, may be specified using option `-o`:
 
 #### Example:
 ```sh
-java -jar uml2prov.jar -m examples/models/Stack.uml -i examples/listeners/ListenerCSV.java
+java -jar uml2prov.jar -m examples/models/Stack.uml -i examples/listeners -l a.b.ListenerCSV
 ```
 
 The execution of the command generates a new directory, with the following content:
@@ -132,7 +133,7 @@ First, use the `-sourceroots` option to pass the directories containing the sour
 
 Assuming a Windows system, the following command compiles all the generated aspects and classes resulting from the uml2prov.jar execution (previous step); then, it generates a jar with the instrumentation code (called BGM.jar).
 
-**WARNING**: usually the process will display a number of warnings. POR QUE ¡EXPLICAR!
+**WARNING**: the process will display a number of warnings because, at this point, we don't provide to the ajc compiler the code of the classes to be instrumented. They will be provided in the next step.
 
 ```sh
 ajc -1.8 -sourceroots src-gen -outjar BGM.jar

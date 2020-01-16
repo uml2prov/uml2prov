@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -38,15 +37,10 @@ public class AspectGenerator {
       Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, 
         UMLResource.Factory.INSTANCE);
       Resource res = set.getResource(URI.createFileURI(propertiesFile), true);
-      boolean _exists = new File(outputDirectory).exists();
-      if (_exists) {
-        File _file = new File(outputDirectory);
-        FileUtils.deleteDirectory(_file);
-      }
       new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect")).mkdirs();
       new File((outputDirectory + "/dependencies")).mkdirs();
-      File _file_1 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/BGMEventInstrumenter.aj"));
-      PrintStream provenanceExtractorAJ = new PrintStream(_file_1);
+      File _file = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/BGMEventInstrumenter.aj"));
+      PrintStream provenanceExtractorAJ = new PrintStream(_file);
       provenanceExtractorAJ.println(AspectGenerator.parents(interfaceImpl));
       Iterable<Model> _filter = Iterables.<Model>filter(res.getContents(), Model.class);
       for (final Model element : _filter) {
@@ -64,28 +58,28 @@ public class AspectGenerator {
       }
       provenanceExtractorAJ.println(AspectConstructor.codeMethodsDeclarationAJ());
       provenanceExtractorAJ.close();
-      File _file_2 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/UUID.java"));
-      PrintStream _printStream = new PrintStream(_file_2);
+      File _file_1 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/UUID.java"));
+      PrintStream _printStream = new PrintStream(_file_1);
       provenanceExtractorAJ = _printStream;
       provenanceExtractorAJ.println(AspectConstructor.generateUUID());
       provenanceExtractorAJ.close();
-      File _file_3 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/BGMEvent.java"));
-      PrintStream _printStream_1 = new PrintStream(_file_3);
+      File _file_2 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/BGMEvent.java"));
+      PrintStream _printStream_1 = new PrintStream(_file_2);
       provenanceExtractorAJ = _printStream_1;
       provenanceExtractorAJ.println(AspectConstructor.generateBGMEvent());
       provenanceExtractorAJ.close();
-      File _file_4 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/EventHelper.java"));
-      PrintStream _printStream_2 = new PrintStream(_file_4);
+      File _file_3 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/EventHelper.java"));
+      PrintStream _printStream_2 = new PrintStream(_file_3);
       provenanceExtractorAJ = _printStream_2;
       provenanceExtractorAJ.println(AspectConstructor.generateEventHelper());
       provenanceExtractorAJ.close();
-      File _file_5 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/BGMEventListener.java"));
-      PrintStream _printStream_3 = new PrintStream(_file_5);
+      File _file_4 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/BGMEventListener.java"));
+      PrintStream _printStream_3 = new PrintStream(_file_4);
       provenanceExtractorAJ = _printStream_3;
       provenanceExtractorAJ.println(AspectConstructor.generateBGMEventListener());
       provenanceExtractorAJ.close();
-      File _file_6 = new File((outputDirectory + "/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar"));
-      FileOutputStream target = new FileOutputStream(_file_6);
+      File _file_5 = new File((outputDirectory + "/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar"));
+      FileOutputStream target = new FileOutputStream(_file_5);
       AspectConstructor.copiar(AspectConstructor.getJarDependency(), target);
       target.close();
     } catch (Throwable _e) {
@@ -352,9 +346,8 @@ public class AspectGenerator {
     _builder.newLine();
     _builder.append("import es.unirioja.uml2prov.bgm.BGMEventListener;");
     _builder.newLine();
-    _builder.append("import aspects.listeners.");
-    String _get = interfImp.split("\\.")[0];
-    _builder.append(_get);
+    _builder.append("//import ");
+    _builder.append(interfImp);
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
@@ -749,8 +742,7 @@ public class AspectGenerator {
     _builder.newLine();
     _builder.append("\t\t\t");
     _builder.append("bgmm.addListener(new ");
-    String _get_1 = interfImp.split("\\.")[0];
-    _builder.append(_get_1, "\t\t\t");
+    _builder.append(interfImp, "\t\t\t");
     _builder.append("());");
     _builder.newLineIfNotEmpty();
     _builder.newLine();

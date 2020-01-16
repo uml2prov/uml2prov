@@ -40,7 +40,7 @@ class AspectGenerator {
 		var res = set.getResource(URI.createFileURI(propertiesFile), true);
 
 		// vacio y creo de nuevo la ruta
-		if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
+//		if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
 		new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect").mkdirs;
 		
 //		if(new File(outputDirectory+PATH_UML2PROV_BGM).exists) FileUtils.deleteDirectory(new File(outputDirectory+PATH_UML2PROV_BGM));
@@ -337,7 +337,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import es.unirioja.uml2prov.bgm.BGMEvent;
 import es.unirioja.uml2prov.bgm.EventHelper;
 import es.unirioja.uml2prov.bgm.BGMEventListener;
-import aspects.listeners.«interfImp.split("\\.").get(0)»;
+//import «interfImp»;
 
 public aspect BGMEventInstrumenter {
 
@@ -499,7 +499,7 @@ public aspect BGMEventInstrumenter {
 	private static HashMap<String, List<String>> propertiesMemoryAttributes;
 
 	static {
-			bgmm.addListener(new «interfImp.split("\\.").get(0)»());
+			bgmm.addListener(new «interfImp»());
 
 			returnsArray = new ArrayList<List<SimpleEntry<String, String>>>();
 			startersArray = new ArrayList<List<SimpleEntry<String, String>>>();

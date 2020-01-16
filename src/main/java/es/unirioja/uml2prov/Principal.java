@@ -37,7 +37,8 @@ public class Principal {
 			
 			Options options = new Options();
 			options.addOption("m", true, "UML model addressed by UML2PROV.");
-			options.addOption("i", true, "Java class implementing BGMEventListener. This class sets the configuration for managing and storing bindings.");
+			options.addOption("i", true, "Directory containing the listener source class (java file inside its packages directories)");
+			options.addOption("l", true, "Qualified name of the listener");
 			options.addOption("o", true, "Output directory");
 
 			CommandLineParser parser = new DefaultParser();
@@ -47,20 +48,23 @@ public class Principal {
 				outputDirectory = line.getOptionValue("o");
 			}
 			
-			if (line.hasOption("m") && line.hasOption("i")) {
+			if (line.hasOption("m") && line.hasOption("i") && line.hasOption("l") ) {
 				String model= line.getOptionValue("m");
-				String interfaceImplemented= line.getOptionValue("i");
-				String nameInterface = new File(interfaceImplemented).getName();
+				String directoryOfListener= line.getOptionValue("i");
+				String listenerName = line.getOptionValue("l");
+				File pathToListener = new File(directoryOfListener,listenerName.replace(".", "/")+".java");
+				File targetPath = new File(outputDirectory,listenerName.replace(".", "/")+".java");
 
-				AspectGenerator.generateBGM(model,nameInterface, outputDirectory);
+				if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
+
+				FileUtils.copyFile(pathToListener, targetPath);
+				
+				AspectGenerator.generateBGM(model,listenerName, outputDirectory);
 				class2prov(model, outputDirectory+"/templates/class");
 				seq2prov(model, outputDirectory+"/templates/sequence");
 				smd2prov(model, outputDirectory+"/templates/state");
 				class2prop(model, outputDirectory);
 				
-				FileUtils.copyFile(new File(interfaceImplemented), new File(outputDirectory+"/"+interfaceImplemented));
-
-
 				new File(CLASSPROVFILEPATH).delete();
 				new File(SEQPROVFILEPATH).delete();
 				new File(PROPFILEPATH).delete();
