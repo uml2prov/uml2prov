@@ -1,4 +1,4 @@
-package aspects;
+package es.unirioja.uml2prov.bgm.aspect;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,10 +18,11 @@ import java.util.concurrent.ThreadFactory;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
-import aspects.events.BGMEvent;
-import aspects.events.EventHelper;
-import aspects.listeners.BGMEventListener;
-import aspects.listeners.ListenerPROVN;
+import es.unirioja.uml2prov.bgm.BGMEvent;
+import es.unirioja.uml2prov.bgm.EventHelper;
+import es.unirioja.uml2prov.bgm.BGMEventListener;
+import aspects.listeners.ListenerPROVN; //ojo
+
 
 public aspect BGMEventInstrumenter {
 

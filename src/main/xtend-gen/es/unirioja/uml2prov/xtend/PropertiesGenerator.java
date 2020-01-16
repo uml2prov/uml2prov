@@ -1,5 +1,6 @@
 package es.unirioja.uml2prov.xtend;
 
+import es.unirioja.uml2prov.xtend.AspectGenerator;
 import es.unirioja.uml2prov.xtend.properties.PropertiesPackage;
 import es.unirioja.uml2prov.xtend.properties.Property;
 import java.io.PrintStream;
@@ -17,7 +18,7 @@ import org.eclipse.xtext.xbase.lib.Exceptions;
 public class PropertiesGenerator {
   public static CharSequence inicio() {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("package aspects;");
+    _builder.append("package es.unirioja.uml2prov.bgm.aspect;");
     _builder.newLine();
     _builder.newLine();
     _builder.append("import java.util.Arrays;");
@@ -80,7 +81,7 @@ public class PropertiesGenerator {
       final ResourceSetImpl resourceSet = new ResourceSetImpl();
       resourceSet.getPackageRegistry().put("http://www.w3.org/ns/properties", PropertiesPackage.eINSTANCE);
       final Resource resource = resourceSet.getResource(URI.createURI(propertiesFile), true);
-      PrintStream propertiesPS = new PrintStream((outputDirectory + "/aspects/LoadProperties.java"));
+      PrintStream propertiesPS = new PrintStream(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/LoadProperties.java"));
       propertiesPS.println(PropertiesGenerator.inicio());
       EList<EObject> _contents = resource.getContents();
       for (final EObject documents : _contents) {

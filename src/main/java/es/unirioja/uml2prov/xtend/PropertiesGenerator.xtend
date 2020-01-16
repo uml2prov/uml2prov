@@ -12,7 +12,7 @@ import es.unirioja.uml2prov.xtend.properties.Property
 class PropertiesGenerator {
 
 	def static inicio()'''
-		package aspects;
+		package es.unirioja.uml2prov.bgm.aspect;
 		
 		import java.util.Arrays;
 		import java.util.HashMap;
@@ -46,7 +46,7 @@ class PropertiesGenerator {
 		resourceSet.getPackageRegistry().put("http://www.w3.org/ns/properties", PropertiesPackage.eINSTANCE);
 		val resource = resourceSet.getResource(URI.createURI(propertiesFile), true)
 
-		var propertiesPS = new PrintStream(outputDirectory+"/aspects/LoadProperties.java");
+		var propertiesPS = new PrintStream(outputDirectory+AspectGenerator.PATH_UML2PROV_BGM+"/aspect/LoadProperties.java");
 		
 		propertiesPS.println(inicio);
 		for (documents : resource.contents) {

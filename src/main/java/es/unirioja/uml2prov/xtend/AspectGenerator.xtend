@@ -16,7 +16,8 @@ import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
 
 class AspectGenerator {
-
+	public static final String PATH_UML2PROV_BGM ="/es/unirioja/uml2prov/bgm";
+	
 	
 	def static void generateBGM(String propertiesFile, String interfaceImpl, String outputDirectory){
 
@@ -39,14 +40,17 @@ class AspectGenerator {
 		var res = set.getResource(URI.createFileURI(propertiesFile), true);
 
 		// vacio y creo de nuevo la ruta
-		if(new File(outputDirectory+"/aspect").exists) FileUtils.deleteDirectory(new File(outputDirectory+"/aspects"));
-		new File(outputDirectory+"/aspects/events").mkdirs;
-		new File(outputDirectory+"/aspects/listeners").mkdirs;
+		if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
+		new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect").mkdirs;
+		
+//		if(new File(outputDirectory+PATH_UML2PROV_BGM).exists) FileUtils.deleteDirectory(new File(outputDirectory+PATH_UML2PROV_BGM));
+//		new File(outputDirectory+PATH_UML2PROV_BGM).mkdirs;
+//		new File(outputDirectory+"/aspects/listeners").mkdirs;
 //		new File("src-gen/aspects/dependencies").mkdirs;
 		new File(outputDirectory+"/dependencies").mkdirs;
 		
 
-		var provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/BGMEventInstrumenter.aj"));
+		var provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect/BGMEventInstrumenter.aj"));
 //		provenanceExtractorAJ.println(AspectConstructor.codeVariablesDeclarationAJ());
 		provenanceExtractorAJ.println(parents(interfaceImpl))
 
@@ -68,25 +72,25 @@ class AspectGenerator {
 //		provenanceExtractorAJ.println(AspectConstructor.generateStateManager)
 //		provenanceExtractorAJ.close;
 		
-		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/UML2PROVTreeMap.java"));
-		provenanceExtractorAJ.println(AspectConstructor.generateUML2PROVTreeMap)
-		provenanceExtractorAJ.close;
+//		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect/UML2PROVTreeMap.java"));
+//		provenanceExtractorAJ.println(AspectConstructor.generateUML2PROVTreeMap)
+//		provenanceExtractorAJ.close;
 		
-		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/UUID.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect/UUID.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateUUID)
 		provenanceExtractorAJ.close;
 
-		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/events/BGMEvent.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/BGMEvent.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateBGMEvent)
 		provenanceExtractorAJ.close;
 
 
-		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/events/EventHelper.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/EventHelper.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateEventHelper)
 		provenanceExtractorAJ.close;
 
 
-		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+"/aspects/listeners/BGMEventListener.java"));
+		provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/BGMEventListener.java"));
 		provenanceExtractorAJ.println(AspectConstructor.generateBGMEventListener)
 		provenanceExtractorAJ.close;
 
@@ -310,7 +314,7 @@ class AspectGenerator {
 
 
 	def static parents(String interfImp)'''
-package aspects;
+package es.unirioja.uml2prov.bgm.aspect;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -330,9 +334,9 @@ import java.util.concurrent.ThreadFactory;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
-import aspects.events.BGMEvent;
-import aspects.events.EventHelper;
-import aspects.listeners.BGMEventListener;
+import es.unirioja.uml2prov.bgm.BGMEvent;
+import es.unirioja.uml2prov.bgm.EventHelper;
+import es.unirioja.uml2prov.bgm.BGMEventListener;
 import aspects.listeners.«interfImp.split("\\.").get(0)»;
 
 public aspect BGMEventInstrumenter {
@@ -523,6 +527,4 @@ public aspect BGMEventInstrumenter {
 	// identificador del mensaje (operacion)
 	private String id_msg_new = "";
 	'''
-
-
 }

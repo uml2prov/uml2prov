@@ -1,5 +1,4 @@
-package aspects.listeners;
-import aspects.events.BGMEvent;
+package es.unirioja.uml2prov.bgm;
 
 public interface BGMEventListener {
 	

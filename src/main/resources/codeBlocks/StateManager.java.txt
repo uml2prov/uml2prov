@@ -1,4 +1,4 @@
-package aspects;
+package es.unirioja.uml2prov.bgm.aspect;
 
 import java.util.Comparator;
 import java.util.Map;

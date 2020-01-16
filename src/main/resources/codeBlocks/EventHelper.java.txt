@@ -1,9 +1,4 @@
-package aspects.events;
-
-/*
- * Author: Francisco Garcia Izquierdo
- * Email: francisco.garcia@unirioja.es
- * */
+package es.unirioja.uml2prov.bgm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
