@@ -25,6 +25,7 @@ import es.unirioja.uml2prov.xtend.PropertiesGenerator;
 
 public class Principal {
 
+
 	
 	private static final String CLASSPROVFILEPATH = "provModelClass.xmi";
 	private static final String SEQPROVFILEPATH = "provModelSeq.xmi";
