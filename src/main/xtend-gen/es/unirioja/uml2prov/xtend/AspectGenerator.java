@@ -28,7 +28,7 @@ import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 public class AspectGenerator {
   public final static String PATH_UML2PROV_BGM = "/es/unirioja/uml2prov/bgm";
   
-  public static void generateBGM(final String propertiesFile, final String interfaceImpl, final String outputDirectory) {
+  public static void generateBGM(final String propertiesFile, final String[] interfaceImpl, final String outputDirectory) {
     try {
       ResourceSetImpl set = new ResourceSetImpl();
       set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
@@ -301,7 +301,7 @@ public class AspectGenerator {
     return _builder;
   }
   
-  public static CharSequence parents(final String interfImp) {
+  public static CharSequence parents(final String[] interfImp) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package es.unirioja.uml2prov.bgm.aspect;");
     _builder.newLine();
@@ -740,11 +740,16 @@ public class AspectGenerator {
     _builder.append("\t");
     _builder.append("static {");
     _builder.newLine();
-    _builder.append("\t\t\t");
-    _builder.append("bgmm.addListener(new ");
-    _builder.append(interfImp, "\t\t\t");
-    _builder.append("());");
-    _builder.newLineIfNotEmpty();
+    {
+      for(final String element : interfImp) {
+        _builder.append("\t\t");
+        _builder.append("bgmm.addListener(new ");
+        _builder.append(element, "\t\t");
+        _builder.append("());");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t\t");
     _builder.newLine();
     _builder.append("\t\t\t");
     _builder.append("returnsArray = new ArrayList<List<SimpleEntry<String, String>>>();");

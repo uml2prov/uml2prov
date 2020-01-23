@@ -49,18 +49,22 @@ public class Principal {
 				outputDirectory = line.getOptionValue("o");
 			}
 			
+			if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
+			
 			if (line.hasOption("m") && line.hasOption("i") && line.hasOption("l") ) {
 				String model= line.getOptionValue("m");
 				String directoryOfListener= line.getOptionValue("i");
-				String listenerName = line.getOptionValue("l");
-				File pathToListener = new File(directoryOfListener,listenerName.replace(".", "/")+".java");
-				File targetPath = new File(outputDirectory,listenerName.replace(".", "/")+".java");
-
-				if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
-
-				FileUtils.copyFile(pathToListener, targetPath);
+				String listenerNames = line.getOptionValue("l");
+				String[] listListenersName = listenerNames.split(";");
 				
-				AspectGenerator.generateBGM(model,listenerName, outputDirectory);
+				
+				for (String listenerName : listListenersName) {
+					File pathToListener = new File(directoryOfListener,listenerName.replace(".", "/")+".java");
+					File targetPath = new File(outputDirectory,listenerName.replace(".", "/")+".java");
+					FileUtils.copyFile(pathToListener, targetPath);
+				}
+				
+				AspectGenerator.generateBGM(model,listListenersName, outputDirectory);
 				class2prov(model, outputDirectory+"/templates/class");
 				seq2prov(model, outputDirectory+"/templates/sequence");
 				smd2prov(model, outputDirectory+"/templates/state");

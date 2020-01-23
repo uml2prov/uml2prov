@@ -19,7 +19,7 @@ class AspectGenerator {
 	public static final String PATH_UML2PROV_BGM ="/es/unirioja/uml2prov/bgm";
 	
 	
-	def static void generateBGM(String propertiesFile, String interfaceImpl, String outputDirectory){
+	def static void generateBGM(String propertiesFile, String[] interfaceImpl, String outputDirectory){
 
 //		Resource.Factory.Registry.INSTANCE.extensionToFactoryMap.put("uml", new XMIResourceFactoryImpl);
 //		val resourceSet = new ResourceSetImpl
@@ -52,8 +52,10 @@ class AspectGenerator {
 
 		var provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect/BGMEventInstrumenter.aj"));
 //		provenanceExtractorAJ.println(AspectConstructor.codeVariablesDeclarationAJ());
-		provenanceExtractorAJ.println(parents(interfaceImpl))
+		
 
+		provenanceExtractorAJ.println(parents(interfaceImpl))
+		
 		for (element : res.contents.filter(typeof(Model))) {
 			provenanceExtractorAJ.println(parents(element, true));
 			provenanceExtractorAJ.println(news(element, true));
@@ -313,7 +315,7 @@ class AspectGenerator {
 		'''«IF cl.namespace==null»«ENDIF»«IF cl.namespace!=null»«Namespaces(cl.namespace)»«IF cl.namespace.namespace!=null».«ENDIF»«cl.name»«ENDIF»'''
 
 
-	def static parents(String interfImp)'''
+	def static parents(String[] interfImp)'''
 package es.unirioja.uml2prov.bgm.aspect;
 
 import java.lang.reflect.InvocationTargetException;
@@ -499,8 +501,10 @@ public aspect BGMEventInstrumenter {
 	private static HashMap<String, List<String>> propertiesMemoryAttributes;
 
 	static {
-			bgmm.addListener(new «interfImp»());
-
+		«FOR element : interfImp»
+			bgmm.addListener(new «element»());
+		«ENDFOR» 
+		
 			returnsArray = new ArrayList<List<SimpleEntry<String, String>>>();
 			startersArray = new ArrayList<List<SimpleEntry<String, String>>>();
 			returnsArrayTimes = new ArrayList<List<SimpleEntry<String, Long>>>();
