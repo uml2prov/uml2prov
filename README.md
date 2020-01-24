@@ -141,7 +141,7 @@ ajc -1.8 -sourceroots "examples/apps/StackExample/src;src-gen" -inpath examples/
 
 Often, the application source code is not available, for example, when third-party libraries are used. If this is your case, the procedure is slightly different. 
 
-Use the `-sourceroots` option to pass to the ajc compiler the directories containing the source files of the generated BGM (generated in the previous step using uml2prov.jar). Use the `-inpath` option to specify the target application jar and its dependencies, as well as the dependencies that the `BGMEventListener`s could need. You must also use `–outjar` option to set the output jar in which the compiled code together with the dependencies.
+Use the `-sourceroots` option to pass to the ajc compiler the directories containing the source files of the generated BGM (generated in the previous step using uml2prov.jar). Use the `-inpath` option to specify the target application jar and its dependencies, as well as the dependencies that the `BGMEventListener`s could need. You must also use `Â–outjar` option to set the output jar in which the compiled code together with the dependencies.
 (NOTE: ajc requires that if there is more than one directory in the path lists, these must be enclosed in double quotes)
 
 **Example**:
@@ -273,7 +273,7 @@ public class ListenerCSV implements BGMEventListener {
 
 The following is another example, that uses the Gson library ([https://github.com/google/gson](https://github.com/google/gson)).
 
-```
+```java
 package a.b;
 
 import com.google.gson.Gson;
