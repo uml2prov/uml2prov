@@ -28,7 +28,10 @@ This UML2PROV reference implementation is a java project available on GitHub ([h
 4. _examples_: directory with examples, containing three subdirectories:
 	- _apps_: directory with the source code of an example application.
 	- _models_: directory with UML models describing the example application.
-	- _listeners_: directory with java implementations of the `BGMEventListener` java interface used in this guide.
+	- _listeners_: directory with three implementations of the `BGMEventListener` java interface used in this guide:
+		- ListenerCSV: stores the bindings of all the operation executions in a single csv file
+		- ListenerCSV2: stores the bindings of each operation execution in a separate csv file
+		- ListenerCSV3: stores the bindings of all the operation executions in a json file (this listener depends on the examples\listeners\dependencies\gson-2.8.2.jar library)
 
 ## How to use UML2PROV
 
@@ -36,13 +39,13 @@ Follow the next steps to make an application provenance-aware using the UML2PROV
 
 ### Before using UML2PROV
 
-UML2PROV assumes that UML diagrams are available for the application. UML2PROV supports Sequence diagrams, State Machine Diagrams, and Class diagrams.
+UML2PROV assumes that UML diagrams are available for the application. UML2PROV supports Sequence diagrams, State Machine Diagrams, and Class diagrams. In the particular case of our Class diagrams to PROV templates transformations, we have considered that operations have implicit semantics that can also provide information of interest for provenance capture. For this reason, we have established a taxonomy of UML Class Diagrams' operations consisted of a set of UML stereotypes that can be used to identify the different types of operations. In this way, operations belonging to the classes of the Class diagrams may be annotated with such stereotypes which will be taken into account by UML2PROV. The profile for this stereotype can be found at [http://uml2prov.unirioja.es/model.profile.uml](http://uml2prov.unirioja.es/model.profile.uml).
 
 UML2PROV requires the UML diagrams to be serialized in XMI, a standard exchange format, or UML, an Eclipse-specific XMI serialization, which are supported by most tools for designing UML diagrams.
 
 #### Example
 
-Consider the UML design of a system that manages the addition and removal of a _Person_ in/from a _Stack_ (example taken from the _Stack example_ presented in M. Seidl et al, _UML@Classroom_, Springer, 2012). A Person object can be placed on a Stack objectusing the pushfunction, and can be removed from the stackusing the pop function.
+Consider the UML design of a system that manages the addition and removal of a `Person` in/from a `Stack` (example taken from the _Stack example_ presented in M. Seidl et al, _UML@Classroom_, Springer, 2012). A `Person` object can be placed on a `Stack` object using the `push` function, and can be removed from the stack using the `pop` function.
 
 This UML design consists of one Class diagram, two Sequence diagrams, and one State Machine diagram. Below, we can see how these UML diagrams look like. Since the scope of this document is not to explain UML, we refer readers not familiar with this language to the standardized documentation of UML (OMG. Unified Modeling Language, UML. Version 2.5. March, 2015). They have been developed using Papyrus ([https://www.eclipse.org/papyrus/](https://www.eclipse.org/papyrus/)). The Papyrus project containing the diagrams can be found in [http://uml2prov.unirioja.es/stack_papyrusProject.zip](http://uml2prov.unirioja.es/stack_papyrusProject.zip).
 
@@ -64,30 +67,35 @@ Note that the BGM is developed on top of AspectJ (an AOP extension to the Java p
 
 To obtain these UML2PROV artefacts, execute the following command:
 ```sh
-java -jar uml2prov.jar -m <path_to_UML_diagrams> -i <path_to_BGMEventListener_directory> -l <Fully-qualified name_of_BGMEventListener>
+java -jar uml2prov.jar -m <path_to_UML_diagrams> -i <path_to_BGMEventListener_directory> -l <Fully-qualified name_of_BGMEventListeners> -o <output_directory>
 ```
 This executable requires three mandatory arguments:
 
 `-m` | Path to the UML diagrams serialized in XMI or ULML.
 
-`-i` | Path to the directory containing the listener source class (a java file inside its packages directories). This class has to implement the `BGMEventListener` interface. This class specifies how to manage the bindings collected during the execution of the application (see in Appendix A how to implement a class for managing bindings).
+`-i` | Path to the directory containing the listeners source classes (java files inside their packages directories). These class must implement the `BGMEventListener` interface. Each listener class specifies how to manage the bindings collected during the execution of the application (see in Appendix A how to implement a listener class for managing bindings).
 
-`-l` | Fully-qualified name of the listener class.
+`-l` | Fully-qualified name of the listener classes (you can specify several class names, separated by comma).
 
 Optionally, the output directory, may be specified using option `-o`:
 
 `-o` | Path to the output directory (by default, this directory is `./src-gen`).
 
+
+**NOTE for windows users**: we strongly recommend to use the old "CMD console" to run the following commands (do not use PowerShell)
+
 #### Example:
+The following command considers three listeners:
+
 ```sh
-java -jar uml2prov.jar -m examples/models/Stack.uml -i examples/listeners -l a.b.ListenerCSV
+java -jar uml2prov.jar -m examples/models/Stack.uml -i examples/listeners -l a.b.ListenerCSV,a.b.ListenerCSV2,a.b.ListenerCSV3
 ```
 
 The execution of the command generates a new directory (called `./src-gen`), with the following content:
 
 - `templates`: folder containing the PROV-templates.
 - _Java package_ `es.unirioja.uml2prov.bgm`: this package contains the source code generated to collect bindings: UML2PROV API Java Classes and an AspectJ _aspect_ with helper classes. 
-- A copy of the Java package containing the provided listener 
+- A copy of the Java packages containing the provided listeners 
 - `dependencies`: folder with dependencies necessary to run the aspect.
 
 ### Integrate the BGM into the existing application
@@ -114,64 +122,54 @@ The AspectJ compiler (called ajc) enables the weaving during the build process b
 
 #### Scenario 1: source code weaving
 
-Specify in the `-sourceroots` option of the ajc compiler the list of paths to directories containing the source files to be compiled (the application source code and the code of the BGM generated in the previous step using uml2prov.jar). (NOTE: ajc requires that if there is more than one directory in the path list, this must be enclosed in double quotes). 
+Specify in the `-sourceroots` option of the ajc compiler the list of paths to directories containing the source files to be compiled (the application source code and the code of the BGM generated in the previous step using uml2prov.jar). If the application has dependencies, these must be specified using the `-inpath` option. (NOTE: ajc requires that if there is more than one directory or jar in the path lists, these must be enclosed in double quotes). 
 
 Then, ajc compiles all source files under each specified directory and its subdirectories. Our recommendation is compiling the generated code (within the _output_ directory generated in the previous step) inside a jar file. To do it, specify in the `-outjar` option the name of the final instrumented application jar.
 
 **Example**:
-Assuming a Windows system, the following command compiles all the source files under the examples/apps/StackExample/src and ./src-gen directories; then, it generates a jar with the code instrumented (called StackAppWithPROV.jar).
+Assuming a Windows system, the following command compiles all the source files under the examples/apps/StackExample/src and ./src-gen directories. That code considers three different `BGMEventListener`s, one of them using the library gson-2.8.2.jar located in the examples/listeners/dependencies directory. Then, the command generates a jar with the instrumented application (called StackAppWithPROV.jar). 
 
 ```sh
-ajc -1.8 -sourceroots "examples/apps/StackExample/src;src-gen" -outjar StackAppWithPROV.jar
+ajc -1.8 -sourceroots "examples/apps/StackExample/src;src-gen" -inpath examples/listeners/dependencies/gson-2.8.2.jar -outjar StackAppWithPROV.jar
 ```
-The executable StackAppWithPROV.jar will execute the original behaviour of the application together with the behaviour for collecting bindings.
+
+
+
+
 
 #### Scenario 2: binary weaving
 
-Often, the application source code is not available, for example, when third-party libraries are used. If this is your case, the procedure is slightly different. Two steps are required.
+Often, the application source code is not available, for example, when third-party libraries are used. If this is your case, the procedure is slightly different. 
 
-First, use the `-sourceroots` option to pass to the ajc compiler the directories containing the source files of the generated BGM (generated in the previous step using uml2prov.jar) (NOTE: ajc requires that if there is more than one directory in the path list, this must be enclosed in double quotes). You must also use `–outjar` option to set the output jar in which the compiled code together with the dependencies.
+Use the `-sourceroots` option to pass to the ajc compiler the directories containing the source files of the generated BGM (generated in the previous step using uml2prov.jar). Use the `-inpath` option to specify the target application jar and its dependencies, as well as the dependencies that the `BGMEventListener`s could need. You must also use `–outjar` option to set the output jar in which the compiled code together with the dependencies.
+(NOTE: ajc requires that if there is more than one directory in the path lists, these must be enclosed in double quotes)
 
 **Example**:
-Assuming a Windows system, the following command compiles all the generated aspects and classes resulting from the uml2prov.jar execution (previous step), and generates a jar with the instrumentation code (called BGM.jar).
-
-**WARNING**: the process will display a number of warnings because, at this point, we don't provide to the ajc compiler the code of the classes to be instrumented. They will be provided in the next step.
+Assuming a Windows system, the following command compiles the target application (Stack.jar), toghether with all the generated aspects and classes resulting from the previous uml2prov.jar execution (this generated code includes three different `BGMEventListener`s, one of them using the library gson-2.8.2.jar located in the examples/listeners/dependencies directory). Then, the command generates a jar with the instrumented application (called StackAppWithPROV.jar). 
 
 ```sh
-ajc -1.8 -sourceroots src-gen -outjar BGM.jar
+ajc -1.8 -sourceroots src-gen -inpath "examples/apps/StackExample/Stack.jar;examples/listeners/dependencies/gson-2.8.2.jar" -outjar StackAppWithPROV.jar
 ```
 
-Second, the target application (Stack.jar) must be weaved with the behaviour compiled in the BGM.jar, generating a new executable called StackAppWithPROV2.jar.
+In both scenarios, the executable StackAppWithPROV.jar will execute the original behaviour of the application together with the behaviour for collecting bindings.
 
-Example: 
-```sh
-ajc -inpath examples/apps/StackExample/Stack.jar -aspectpath BGM.jar -outjar StackAppWithPROV2.jar
-```
 
-The new executable StackAppWithPROV2.jar will execute the original behaviour of the application together with the behaviour for collecting bindings.
+
 
 ### Execute the application with provenance capabilities
 
-In the first scenario, where all the code has been compiled together, the application with provenance capabilities is executed as follows (Note that `App.App` is the name of the main class of the application taken as example; it just creates 10 `Person` objects and adds then to an `Stack` object):
+The application with provenance capabilities is executed as follows. Note that `App.App` is the name of the main class of the application taken as example; it just creates 10 `Person` objects and adds then to an `Stack` object; the dependency examples/listeners/dependencies/gson-2.8.2.jar is required by one of the considered listeners:
 
 ```sh
-java -cp StackAppWithPROV.jar;src-gen/dependencies/* App.App
+java -cp StackAppWithPROV.jar;src-gen/dependencies/*;examples/listeners/dependencies/gson-2.8.2.jar App.App
 ```
-
-Conversely, if we proceeded with the latter scenario, and we performed a binary weaving, we can execute the application with provenance capabilities as follow:
-
-```sh
-java -cp StackAppWithPROV2.jar;src-gen/dependencies/*;BGM.jar App.App
-```
-
-
 
 
 # Appendix A
 
 ## How to configure the management of bindings
 
-The configuration for managing bindings boils down to develop a java class implementing the interface `es.unirioja.uml2prov.bgm.BGMEventListener`.
+The configuration for managing bindings boils down to develop a java class implementing the interface `es.unirioja.uml2prov.bgm.BGMEventListener`. To develop such a class, you will need the uml2prov-bgm-api.jar, which can be downloaded from [http://uml2prov.unirioja.es/uml2prov-bgm-api.jar](http://uml2prov.unirioja.es/uml2prov-bgm-api.jar).
 
 ### BGMEventListener interface
 
@@ -272,3 +270,53 @@ public class ListenerCSV implements BGMEventListener {
   }
 }
 ```
+
+The following is another example, that uses the Gson library ([https://github.com/google/gson](https://github.com/google/gson)).
+
+```
+package a.b;
+
+import com.google.gson.Gson;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Random;
+import es.unirioja.uml2prov.bgm.BGMEvent;
+import es.unirioja.uml2prov.bgm.BGMEventListener;
+
+public class ListenerCSV3 implements BGMEventListener {
+
+  private PrintStream ps;
+
+  public ListenerCSV3() {
+    try {
+      String nameFile = Math.abs(new Random().nextInt()) + "_bindings.json";
+      ps = new PrintStream(nameFile);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void newValueBinding(BGMEvent e) {
+    ps.println(new Gson().toJson(e));
+  }
+
+  @Override
+  public void newBinding(BGMEvent e) {
+    ps.println(new Gson().toJson(e));
+  }
+
+  @Override
+  public void operationStart(BGMEvent e) {
+  }
+
+  @Override
+  public void operationEnd(BGMEvent e) {
+  }
+
+}
+```
+
+

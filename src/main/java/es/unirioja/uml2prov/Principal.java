@@ -2,6 +2,7 @@ package es.unirioja.uml2prov;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -55,8 +56,7 @@ public class Principal {
 				String model= line.getOptionValue("m");
 				String directoryOfListener= line.getOptionValue("i");
 				String listenerNames = line.getOptionValue("l");
-				String[] listListenersName = listenerNames.split(";");
-				
+				String[] listListenersName = listenerNames.split(",");				
 				
 				for (String listenerName : listListenersName) {
 					File pathToListener = new File(directoryOfListener,listenerName.replace(".", "/")+".java");
