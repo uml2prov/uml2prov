@@ -31,7 +31,7 @@ This UML2PROV reference implementation is a java project available on GitHub ([h
 	- _listeners_: directory with three implementations of the `BGMEventListener` java interface used in this guide:
 		- ListenerCSV: stores the bindings of all the operation executions in a single csv file
 		- ListenerCSV2: stores the bindings of each operation execution in a separate csv file
-		- ListenerCSV3: stores the bindings of all the operation executions in a json file (this listener depends on the examples\listeners\dependencies\gson-2.8.2.jar library)
+		- ListenerJSON: stores the bindings of all the operation executions in a json file (this listener depends on the examples\listeners\dependencies\gson-2.8.2.jar library)
 
 ## How to use UML2PROV
 
@@ -67,7 +67,7 @@ Note that the BGM is developed on top of AspectJ (an AOP extension to the Java p
 
 To obtain these UML2PROV artefacts, execute the following command:
 ```sh
-java -jar uml2prov.jar -m <path_to_UML_diagrams> -i <path_to_BGMEventListener_directory> -l <Fully-qualified name_of_BGMEventListeners> -o <output_directory>
+java -jar uml2prov.jar -m <path_to_UML_diagrams> -i <path_to_BGMEventListener_directory> -l <Fully-qualified name_of_BGMEventListeners> [-o <output_directory>]
 ```
 This executable requires three mandatory arguments:
 
@@ -285,11 +285,11 @@ import java.util.Random;
 import es.unirioja.uml2prov.bgm.BGMEvent;
 import es.unirioja.uml2prov.bgm.BGMEventListener;
 
-public class ListenerCSV3 implements BGMEventListener {
+public class ListenerJSON implements BGMEventListener {
 
   private PrintStream ps;
 
-  public ListenerCSV3() {
+  public ListenerJSON() {
     try {
       String nameFile = Math.abs(new Random().nextInt()) + "_bindings.json";
       ps = new PrintStream(nameFile);
