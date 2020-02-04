@@ -1,0 +1,12 @@
+package es.unirioja.uml2prov.bgm;
+
+public interface BGMEventListener {
+	
+	public void newValueBinding(BGMEvent e);
+	public void newBinding(BGMEvent e);
+	public void operationStart(BGMEvent e);
+	public void operationEnd(BGMEvent e);
+
+}
+
+
