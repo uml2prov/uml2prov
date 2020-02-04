@@ -102,7 +102,7 @@ public class C2PROV {
 		properties = new Properties();
 //		properties.load(new FileInputStream("resources/properties/C2PROV.properties"));
 
-		properties.load(getClass().getResourceAsStream("/properties/C2PROV.properties"));
+		properties.load(getClass().getResourceAsStream("/resources/properties/C2PROV.properties"));
 		//properties.load(getFileURL("${basedir}/src/main/resource/properties/C2PROV.properties").openStream());
 		EPackage.Registry.INSTANCE.put(getMetamodelUri("UML"), org.eclipse.uml2.uml.UMLPackage.eINSTANCE);
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());

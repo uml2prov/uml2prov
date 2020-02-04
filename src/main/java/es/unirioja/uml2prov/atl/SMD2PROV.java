@@ -99,7 +99,7 @@ public class SMD2PROV {
 	 */
 	public SMD2PROV() throws IOException {
 		properties = new Properties();
-		properties.load(getClass().getResourceAsStream("/properties/SMD2PROV.properties"));
+		properties.load(getClass().getResourceAsStream("/resources/properties/SMD2PROV.properties"));
 
 //		properties.load(new FileInputStream("resources/properties/SMD2PROV.properties"));
 //		properties.load(AspectConstructor.class.getResourceAsStream("resources/properties/SMD2PROV.properties"));
