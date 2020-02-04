@@ -46,17 +46,17 @@ public class AspectConstructor {
 	}
 	
 	public static InputStream getJarDependency() throws IOException{
-		return 	AspectConstructor.class.getResourceAsStream("/resources/codeBlocks/org.aspectj.runtime_1.9.2.201811011643.jar");
+		return 	AspectConstructor.class.getResourceAsStream("/codeBlocks/org.aspectj.runtime_1.9.2.201811011643.jar");
 	}
 
 	public static String generateStateManager() throws IOException {
 //		String text = "Some error occurrs";
-//		InputStream is = AspectConstructor.class.getResourceAsStream("/resources/codeBlocks/StateManager.java.txt");
+//		InputStream is = AspectConstructor.class.getResourceAsStream("/codeBlocks/StateManager.java.txt");
 //		BufferedReader fis = new BufferedReader(new InputStreamReader(is));
 //		StringWriter sw = new StringWriter();
 //		copiar(fis, sw);
 //		text = sw.toString();
-		return stringFromFile("/resources/codeBlocks/StateManager.java.txt");
+		return stringFromFile("/codeBlocks/StateManager.java.txt");
 	}
 
 	public static void main(String[] args) {
@@ -71,63 +71,63 @@ public class AspectConstructor {
 	public static String generateUML2PROVTreeMap() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/UML2PROVTreeMap.java")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/UML2PROVTreeMap.java")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/UML2PROVTreeMap.java.txt");
+		return stringFromFile("/codeBlocks/UML2PROVTreeMap.java.txt");
 
 	}
 
 	public static String generateUUID() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/UUID.java")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/UUID.java")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/UUID.java.txt");
+		return stringFromFile("/codeBlocks/UUID.java.txt");
 
 	}
 
 	public static String generateBGMEvent() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/BGMEvent.java")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/BGMEvent.java")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/BGMEvent.java.txt");
+		return stringFromFile("/codeBlocks/BGMEvent.java.txt");
 
 	}
 
 	public static String generateEventHelper() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/EventHelper.java")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/EventHelper.java")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/EventHelper.java.txt");
+		return stringFromFile("/codeBlocks/EventHelper.java.txt");
 
 	}
 
 	public static String generateBGMEventListener() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/BGMListener.java")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/BGMListener.java")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
@@ -135,41 +135,41 @@ public class AspectConstructor {
 //		}
 //		return text;
 				
-		return stringFromFile("/resources/codeBlocks/BGMEventListener.java.txt");
+		return stringFromFile("/codeBlocks/BGMEventListener.java.txt");
 
 	}
 
 	public static String generateListenerPROVN() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/ListenerPROVN.java")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/ListenerPROVN.java")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/ListenerPROVN.java.txt");
+		return stringFromFile("/codeBlocks/ListenerPROVN.java.txt");
 	}
 
 	public static String codeVariablesDeclarationAJ() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/variablesDeclaration.txt")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/variablesDeclaration.txt")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/variablesDeclaration.txt");
+		return stringFromFile("/codeBlocks/variablesDeclaration.txt");
 
 	}
 
 	public static String codeMethodsDeclarationAJ() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/methodsDeclaration.txt")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/methodsDeclaration.txt")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
@@ -177,14 +177,14 @@ public class AspectConstructor {
 //		}
 //		return text;
 
-		return stringFromFile("/resources/codeBlocks/methodsDeclaration.txt");
+		return stringFromFile("/codeBlocks/methodsDeclaration.txt");
 
 	}
 
 	public static String codeInsideBefore() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/codeInsideBefore.txt")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideBefore.txt")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
@@ -192,34 +192,34 @@ public class AspectConstructor {
 //		}
 //		return text;
 
-		return stringFromFile("/resources/codeBlocks/codeInsideBefore.txt");
+		return stringFromFile("/codeBlocks/codeInsideBefore.txt");
 	}
 
 	public static String codeInsideAfter() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/codeInsideAfter.txt")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideAfter.txt")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/codeInsideAfter.txt");
+		return stringFromFile("/codeBlocks/codeInsideAfter.txt");
 
 	}
 
 	public static String codeInsideAround() throws IOException {
 //		String text = "Some error occurrs";
 //		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/resources/codeBlocks/codeInsideAround.txt")),
+//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideAround.txt")),
 //					StandardCharsets.UTF_8);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return text;
-		return stringFromFile("/resources/codeBlocks/codeInsideAround.txt");
+		return stringFromFile("/codeBlocks/codeInsideAround.txt");
 	}
 
 }

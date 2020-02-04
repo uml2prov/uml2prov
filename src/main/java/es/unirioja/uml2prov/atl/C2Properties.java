@@ -95,7 +95,7 @@ public class C2Properties {
 	 */
 	public C2Properties() throws IOException {
 		properties = new Properties();
-		properties.load(getClass().getResourceAsStream("/resources/properties/C2Properties.properties"));
+		properties.load(getClass().getResourceAsStream("/properties/C2Properties.properties"));
 
 //		EPackage.Registry.INSTANCE.put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
 	    EPackage.Registry.INSTANCE.put(getMetamodelUri("UML"), org.eclipse.uml2.uml.UMLPackage.eINSTANCE);		

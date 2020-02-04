@@ -99,7 +99,7 @@ public class SeqD2PROV {
 	 */
 	public SeqD2PROV() throws IOException {
 		properties = new Properties();
-		properties.load(getClass().getResourceAsStream("/resources/properties/SeqD2PROV.properties"));
+		properties.load(getClass().getResourceAsStream("/properties/SeqD2PROV.properties"));
 
 //		properties.load(new FileInputStream("resources/properties/SeqD2PROV.properties"));
 //		properties.load(AspectConstructor.class.getResourceAsStream("resources/properties/SeqD2PROV.properties"));
