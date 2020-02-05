@@ -32,8 +32,9 @@ public class AspectGenerator {
     try {
       ResourceSetImpl set = new ResourceSetImpl();
       set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
-      set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
-      Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
+      set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, 
+        UMLResource.Factory.INSTANCE);
+      set.getPackageRegistry().put("http://www.eclipse.org/uml2/5.0.0/UML", UMLPackage.eINSTANCE);
       Resource res = set.getResource(URI.createFileURI(propertiesFile), true);
       new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect")).mkdirs();
       new File((outputDirectory + "/dependencies")).mkdirs();
