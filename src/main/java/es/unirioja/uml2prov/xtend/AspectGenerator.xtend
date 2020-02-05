@@ -14,6 +14,8 @@ import org.eclipse.uml2.uml.Model
 import org.eclipse.uml2.uml.Namespace
 import org.eclipse.uml2.uml.UMLPackage
 import org.eclipse.uml2.uml.resource.UMLResource
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
+import org.eclipse.emf.ecore.EPackage
 
 class AspectGenerator {
 	public static final String PATH_UML2PROV_BGM ="/es/unirioja/uml2prov/bgm";
@@ -21,37 +23,40 @@ class AspectGenerator {
 	
 	def static void generateBGM(String propertiesFile, String[] interfaceImpl, String outputDirectory){
 
-//		Resource.Factory.Registry.INSTANCE.extensionToFactoryMap.put("uml", new XMIResourceFactoryImpl);
-//		val resourceSet = new ResourceSetImpl
-//		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);		
-//		
-//		val resource = resourceSet.getResource(URI.createURI("model1.uml"), true)
-//
-//		//vacio y creo de nuevo la ruta
-//		if(new File("src-gen/"+"aspects").exists)	FileUtils.deleteDirectory(new File("src-gen/"+"aspects"));
-//		new File("src-gen/"+"aspects").mkdirs;
-		var set = new ResourceSetImpl()
-		set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE)
-		set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,
-			UMLResource.Factory.INSTANCE);
-		set.getPackageRegistry().put("http://www.eclipse.org/uml2/5.0.0/UML", UMLPackage.eINSTANCE);
+/////////////
+//		var set = new ResourceSetImpl()
+//		set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE)
+//		set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,	UMLResource.Factory.INSTANCE);
+//		set.getPackageRegistry().put("http://www.eclipse.org/uml2/5.0.0/UML", UMLPackage.eINSTANCE);
+//		var res = set.getResource(URI.createFileURI(propertiesFile), true);
+/////////////
+
+		var resourceSet = new ResourceSetImpl();
+//		set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE)
+		resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE)
+//		set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,	UMLResource.Factory.INSTANCE);
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION,	UMLResource.Factory.INSTANCE);
+//		set.getPackageRegistry().put("http://www.eclipse.org/uml2/5.0.0/UML", UMLPackage.eINSTANCE);
+		resourceSet.getPackageRegistry().put("http://www.eclipse.org/uml2/5.0.0/UML", UMLPackage.eINSTANCE);	
+			
+//		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(resourceSet.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+//		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("uml", new XMIResourceFactoryImpl());
+		
+//		var uriMap = resourceSet.getURIConverter().getURIMap();		
+//		var uri = URI.createFileURI(propertiesFile);
+//		uriMap.put(URI.createURI(UMLResource.LIBRARIES_PATHMAP), uri.appendSegment("libraries").appendSegment(""));
+//		uriMap.put(URI.createURI(UMLResource.METAMODELS_PATHMAP), uri.appendSegment("metamodels").appendSegment(""));
+//		uriMap.put(URI.createURI(UMLResource.PROFILES_PATHMAP), uri.appendSegment("profiles").appendSegment(""));
+		
+//		EPackage.Registry.INSTANCE.put(propertiesFile,UMLPackage.eINSTANCE);
+		var res = resourceSet.getResource(URI.createFileURI(propertiesFile), true);
 
 
-		var res = set.getResource(URI.createFileURI(propertiesFile), true);
-
-		// vacio y creo de nuevo la ruta
-//		if(new File(outputDirectory).exists()) FileUtils.deleteDirectory(new File(outputDirectory));
 		new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect").mkdirs;
 		
-//		if(new File(outputDirectory+PATH_UML2PROV_BGM).exists) FileUtils.deleteDirectory(new File(outputDirectory+PATH_UML2PROV_BGM));
-//		new File(outputDirectory+PATH_UML2PROV_BGM).mkdirs;
-//		new File(outputDirectory+"/aspects/listeners").mkdirs;
-//		new File("src-gen/aspects/dependencies").mkdirs;
 		new File(outputDirectory+"/dependencies").mkdirs;
-		
 
 		var provenanceExtractorAJ = new PrintStream(new File(outputDirectory+PATH_UML2PROV_BGM+"/aspect/BGMEventInstrumenter.aj"));
-//		provenanceExtractorAJ.println(AspectConstructor.codeVariablesDeclarationAJ());
 		
 
 		provenanceExtractorAJ.println(parents(interfaceImpl))

@@ -109,7 +109,6 @@
         <ownedOperation xmi:type="uml:Operation" xmi:id="_lc97sNY-EemOc7zqB3lKaQ" name="setTop" visibility="private">
           <ownedParameter xmi:type="uml:Parameter" xmi:id="_pNbVkNY-EemOc7zqB3lKaQ" name="setTop" type="_qlDsUNY9EemOc7zqB3lKaQ"/>
         </ownedOperation>
-        <ownedOperation xmi:type="uml:Operation" xmi:id="_CCa7YOxHEem7RJ-33l-ZMA" name="Stack"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_qlDsUNY9EemOc7zqB3lKaQ" name="StackEl" classifierBehavior="_upsf8NouEem5J51WT_qf3A">
         <ownedAttribute xmi:type="uml:Property" xmi:id="_iEgVotY_EemOc7zqB3lKaQ" name="precedingEl" visibility="private" type="_qlDsUNY9EemOc7zqB3lKaQ" association="_iEfukNY_EemOc7zqB3lKaQ">
@@ -152,11 +151,6 @@
         </ownedAttribute>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_oKIPoOB9Eemg6OuEB_KN2w" name="getName">
           <ownedParameter xmi:type="uml:Parameter" xmi:id="_tsRpkOB9Eemg6OuEB_KN2w" direction="return">
-            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
-          </ownedParameter>
-        </ownedOperation>
-        <ownedOperation xmi:type="uml:Operation" xmi:id="_6jDm0OxGEem7RJ-33l-ZMA" name="Person">
-          <ownedParameter xmi:type="uml:Parameter" xmi:id="_BLQC0OxHEem7RJ-33l-ZMA" name="name">
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
           </ownedParameter>
         </ownedOperation>

@@ -65,6 +65,7 @@ public class Principal {
 				}
 				
 				AspectGenerator.generateBGM(model,listListenersName, outputDirectory);
+				
 				class2prov(model, outputDirectory+"/templates/class");
 				seq2prov(model, outputDirectory+"/templates/sequence");
 				smd2prov(model, outputDirectory+"/templates/state");

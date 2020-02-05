@@ -112,6 +112,8 @@
 								<copy todir="${project.build.directory}/examples">
 									<fileset dir="src/main/resources/examples" />
 								</copy>
+								<copy file="src/main/resources/codeBlocks/model.profile.uml" tofile="${project.build.directory}/model.profile.uml"></copy>
+								
 							</tasks>
 						</configuration>
 						<goals>
