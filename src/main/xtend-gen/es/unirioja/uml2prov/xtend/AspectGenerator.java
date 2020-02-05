@@ -81,6 +81,11 @@ public class AspectGenerator {
       FileOutputStream target = new FileOutputStream(_file_5);
       AspectConstructor.copiar(AspectConstructor.getJarDependency(), target);
       target.close();
+      File _file_6 = new File((outputDirectory + "/model.profile.uml"));
+      FileOutputStream _fileOutputStream = new FileOutputStream(_file_6);
+      target = _fileOutputStream;
+      AspectConstructor.copiar(AspectConstructor.getProfileUML2PROV(), target);
+      target.close();
     } catch (Throwable _e) {
       throw Exceptions.sneakyThrow(_e);
     }

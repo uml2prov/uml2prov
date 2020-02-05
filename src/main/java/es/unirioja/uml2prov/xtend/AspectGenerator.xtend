@@ -104,6 +104,12 @@ class AspectGenerator {
 		AspectConstructor.copiar(AspectConstructor.jarDependency,target);
 		target.close();
 		
+		target = new FileOutputStream(new File(outputDirectory+"/model.profile.uml"));
+		AspectConstructor.copiar(AspectConstructor.profileUML2PROV,target);
+		target.close();
+		
+		
+		
 //		FileUtils.copyFile(new File("src/main/resources/codeBlocks/org.aspectj.runtime_1.9.2.201811011643.jar"), fos);
 
 

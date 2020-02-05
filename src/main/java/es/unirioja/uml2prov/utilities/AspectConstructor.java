@@ -48,6 +48,10 @@ public class AspectConstructor {
 	public static InputStream getJarDependency() throws IOException{
 		return 	AspectConstructor.class.getResourceAsStream("/codeBlocks/org.aspectj.runtime_1.9.2.201811011643.jar");
 	}
+	
+	public static InputStream getProfileUML2PROV() throws IOException{
+		return 	AspectConstructor.class.getResourceAsStream("/codeBlocks/model.profile.uml");
+	}
 
 	public static String generateStateManager() throws IOException {
 //		String text = "Some error occurrs";
