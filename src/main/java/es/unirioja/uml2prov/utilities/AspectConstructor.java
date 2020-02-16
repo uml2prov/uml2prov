@@ -170,60 +170,60 @@ public class AspectConstructor {
 
 	}
 
-	public static String codeMethodsDeclarationAJ() throws IOException {
-//		String text = "Some error occurrs";
-//		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/methodsDeclaration.txt")),
-//					StandardCharsets.UTF_8);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return text;
+//	public static String codeMethodsDeclarationAJ() throws IOException {
+////		String text = "Some error occurrs";
+////		try {
+////			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/methodsDeclaration.txt")),
+////					StandardCharsets.UTF_8);
+////		} catch (IOException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+////		return text;
+//
+//		return stringFromFile("/codeBlocks/methodsDeclaration.txt");
+//
+//	}
 
-		return stringFromFile("/codeBlocks/methodsDeclaration.txt");
+//	public static String codeInsideBefore() throws IOException {
+////		String text = "Some error occurrs";
+////		try {
+////			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideBefore.txt")),
+////					StandardCharsets.UTF_8);
+////		} catch (IOException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+////		return text;
+//
+//		return stringFromFile("/codeBlocks/codeInsideBefore.txt");
+//	}
 
-	}
+//	public static String codeInsideAfter() throws IOException {
+////		String text = "Some error occurrs";
+////		try {
+////			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideAfter.txt")),
+////					StandardCharsets.UTF_8);
+////		} catch (IOException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+////		return text;
+//		return stringFromFile("/codeBlocks/codeInsideAfter.txt");
+//
+//	}
 
-	public static String codeInsideBefore() throws IOException {
-//		String text = "Some error occurrs";
-//		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideBefore.txt")),
-//					StandardCharsets.UTF_8);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return text;
-
-		return stringFromFile("/codeBlocks/codeInsideBefore.txt");
-	}
-
-	public static String codeInsideAfter() throws IOException {
-//		String text = "Some error occurrs";
-//		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideAfter.txt")),
-//					StandardCharsets.UTF_8);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return text;
-		return stringFromFile("/codeBlocks/codeInsideAfter.txt");
-
-	}
-
-	public static String codeInsideAround() throws IOException {
-//		String text = "Some error occurrs";
-//		try {
-//			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideAround.txt")),
-//					StandardCharsets.UTF_8);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return text;
-		return stringFromFile("/codeBlocks/codeInsideAround.txt");
-	}
+//	public static String codeInsideAround() throws IOException {
+////		String text = "Some error occurrs";
+////		try {
+////			text = new String(Files.readAllBytes(Paths.get("src/main/codeBlocks/codeInsideAround.txt")),
+////					StandardCharsets.UTF_8);
+////		} catch (IOException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+////		return text;
+//		return stringFromFile("/codeBlocks/codeInsideAround.txt");
+//	}
 
 }

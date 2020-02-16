@@ -279,10 +279,14 @@ entrypoint rule DocumentRoot(){
 
 rule newInputEntity(doc:PROV!Document){
 	to
+		inputEn_name:  PROV!PAttribute (
+			key <- 'u2p:className', 
+			value <- 'var:inputType'
+		),
 		inputEn: PROV!Entity (
 			id <- 'var:input',
-			type <- 'var:inputType',
-			value <- 'var:inputValue'
+			value <- 'var:inputValue',
+			anyAttribute <- inputEn_name
 		)
 	do{
 		doc.entity<-inputEn;
@@ -299,14 +303,18 @@ rule OperationFactory2Document {
 		hasAttr: Boolean = operation.class.ownedAttribute->size() > 1;
 	}
 	to
+		obj_name:  PROV!PAttribute (
+			key <- 'u2p:className', 
+			value <- 'var:className'
+		),
 		obj: PROV!Agent(
-			id<- 'var:lifeline'
+			id<- 'var:senderObject'
 		),
 		objRef: PROV!IDRef(
 			ref<-obj.id
 		),
 		targetEn: PROV!Entity (
-			id <- 'var:target',
+			id <- 'var:preObject',
 			type <- 'exe:' + operation.class.name,
 			type<- 'u2p:Object'
 		),
@@ -357,8 +365,8 @@ rule OperationFactory2Document {
 			agent <- obj
 		)
 	do {
-			thisModule.genEntityWithTypeAndValue('var:newRequest', 'u2p:RequestMessage','', doc);
-			thisModule.genWGBwithRole('var:newRequest', 'u2p:RequestMessage', operationAct,doc);
+			thisModule.genEntityWithTypeAndValue('var:nestedRequest', 'u2p:RequestMessage','', doc);
+			thisModule.genWGBwithRole('var:nestedRequest', 'u2p:RequestMessage', operationAct,doc);
 		
 			--generate all the input parameters entities
 			if(existIn){
@@ -387,7 +395,7 @@ rule executionSpecification2document {
 	}
 	to
 		obj: PROV!Agent(
-			id<- 'var:lifeline'
+			id<- 'var:senderObject'
 		),
 		objRef: PROV!IDRef(
 			ref<-obj.id
@@ -434,16 +442,13 @@ rule executionSpecification2document {
 		}
 		if(thisModule.thereIsReply(sendMessage) and thisModule.thereIsOutReturnParams(sendMessage)){
 				thisModule.genEntityWithTypeAndValue('var:output', 'var:outputType','var:outputValue', doc);
-				
-				thisModule.genEntityWithTypeAndValue('var:messageReply', 'u2p:ReplyMessage','', doc);
-				thisModule.genWGBwithRole('var:messageReply', '', ac,doc);
-				
-				thisModule.hadMember('var:messageReply', 'var:output', doc);
-				
+				thisModule.genEntityWithTypeAndValue('var:nestedResponse', 'u2p:ReplyMessage','', doc);
+				thisModule.genWGBwithRole('var:nestedResponse', '', ac,doc);
+				thisModule.hadMember('var:nestedResponse', 'var:output', doc);
 				outParam<-true;
 		}
 		if(outParam){
-				thisModule.genWDF('var:starter', 'var:messageReply' , doc);	
+				thisModule.genWDF('var:starter', 'var:nestedResponse' , doc);	
 		}
 		
 	
@@ -457,8 +462,8 @@ rule executionSpecification2document {
 					if(not os.message.oclIsUndefined()){
 						if(not isInformed and thisModule.belongsToTheSameLifeline(ms, os) and ( os.message.messageSort.toString()='asynchCall'	or os.message.messageSort.toString()='synchCall' or os.message.messageSort.toString()='createMessage')){
 							
-									thisModule.genEntityWithTypeAndValue('var:newRequest', 'u2p:RequestMessage','', doc);
-									thisModule.genWGBwithRole('var:newRequest', 'u2p:RequestMessage', ac,doc);
+									thisModule.genEntityWithTypeAndValue('var:nestedRequest', 'u2p:RequestMessage','', doc);
+									thisModule.genWGBwithRole('var:nestedRequest', 'u2p:RequestMessage', ac,doc);
 									
 									isInformed<- true;
 						}
@@ -466,10 +471,10 @@ rule executionSpecification2document {
 						if(not isInformedWithOutput and (thisModule.belongsToTheSameLifeline(ms, os)  and os.message.messageSort.toString()='reply')){
 
 							--it is mandatory to have a reply if there is a synchCall, this reply will has an output
-							thisModule.genEntityWithTypeAndValue('var:replyMessages', 'u2p:ReplyMessage','', doc);
-							thisModule.genU_message('var:replyMessages', ac, doc);
+							thisModule.genEntityWithTypeAndValue('var:nestedResponse', 'u2p:ReplyMessage','', doc);
+							thisModule.genU_message('var:nestedResponse', ac, doc);
 							if(outParam){
-								thisModule.genWDF_message('var:replyMessages', 'var:messageReply', doc)	;
+								thisModule.genWDF_message('var:nestedResponse', 'var:response', doc)	;
 							}
 							
 							isInformedWithOutput<- true;

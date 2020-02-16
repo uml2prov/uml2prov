@@ -37,9 +37,9 @@ rule genEntity(i:String, state:String, type:String, doc: PROV!Document){
 		att: PROV!PAttribute(key <- 'u2p:state'),
 		en:PROV!Entity(id<- i, type<-type, anyAttribute <- att)
 	do{
-		if(i.equals('var:source')){
+		if(i.equals('var:preObject')){
 			att.value<- 'var:sourceState';
-		}else if(i ='var:target'){
+		}else if(i ='var:postObject'){
 			att.value<- 'var:targetState';
 		}
 		
@@ -217,9 +217,9 @@ rule transition2Document2 {
 							
 							targetName <- trans.target.name;
 							
-							thisModule.genEntity('var:target', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
-							thisModule.genWGB('var:target', ev, doc);
-							thisModule.genSpe(objSMD, 'var:target', doc);							
+							thisModule.genEntity('var:postObject', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
+							thisModule.genWGB('var:postObject', ev, doc);
+							thisModule.genSpe(objSMD, 'var:postObject', doc);							
 						}
 
 					}
@@ -229,10 +229,10 @@ rule transition2Document2 {
 						
 						sourceName<- trans.source.name;
 						
-						thisModule.genEntity('var:source', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
-						thisModule.genU('var:source', ev, doc);
-						thisModule.genSpe(objSMD, 'var:source', doc);
-						thisModule.genWIB('var:source', ev, doc);
+						thisModule.genEntity('var:preObject', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
+						thisModule.genU('var:preObject', ev, doc);
+						thisModule.genSpe(objSMD, 'var:preObject', doc);
+						thisModule.genWIB('var:preObject', ev, doc);
 
 					}
 					
@@ -242,17 +242,17 @@ rule transition2Document2 {
 						sourceName<- trans.source.name;
 						targetName <- trans.target.name;
 						
-						thisModule.genEntity('var:source', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
-						thisModule.genU('var:source', ev, doc);
-						thisModule.genSpe(objSMD, 'var:source', doc);
-						thisModule.genWIB('var:source', ev, doc);
+						thisModule.genEntity('var:preObject', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
+						thisModule.genU('var:preObject', ev, doc);
+						thisModule.genSpe(objSMD, 'var:preObject', doc);
+						thisModule.genWIB('var:preObject', ev, doc);
 
 						
-						thisModule.genEntity('var:target', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
-						thisModule.genWGB('var:target', ev, doc);
-						thisModule.genSpe(objSMD, 'var:target', doc);
+						thisModule.genEntity('var:postObject', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
+						thisModule.genWGB('var:postObject', ev, doc);
+						thisModule.genSpe(objSMD, 'var:postObject', doc);
 						
-						thisModule.genWDF('var:source', 'var:target', doc);
+						thisModule.genWDF('var:preObject', 'var:postObject', doc);
 					}
 
 				}
@@ -260,17 +260,17 @@ rule transition2Document2 {
 				---When the transition is internal
 				if (trans.kind.toString()=#internal) {
 					
-					thisModule.genEntity('var:CompState', '', 'exe:'+smdName, doc);
-					thisModule.genSpe(objSMD, 'var:CompState', doc);
+					thisModule.genEntity('var:compState', '', 'exe:'+smdName, doc);
+					thisModule.genSpe(objSMD, 'var:compState', doc);
 					
 					---From initial pseudostate to state
 					if (trans.source.oclIsTypeOf(UML!Pseudostate) and  trans.source.kind=#initial and trans.target.oclIsTypeOf(UML!State)) {
 						
 						targetName <- trans.target.name;
 						
-						thisModule.genEntity('var:target', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
-						thisModule.genWGB('var:target', ev, doc);
-						thisModule.hadMember('var:CompState', 'var:target', doc);
+						thisModule.genEntity('var:postObject', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
+						thisModule.genWGB('var:postObject', ev, doc);
+						thisModule.hadMember('var:compState', 'var:postObject', doc);
 					}
 					
 					---From state to finalState
@@ -278,10 +278,10 @@ rule transition2Document2 {
 						
 						sourceName<- trans.source.name;
 						
-						thisModule.genEntity('var:source', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
-						thisModule.genU('var:source', ev, doc);
-						thisModule.hadMember('var:CompState', 'var:target', doc);
-						thisModule.genWIB('var:source', ev, doc);
+						thisModule.genEntity('var:preObject', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
+						thisModule.genU('var:preObject', ev, doc);
+						thisModule.hadMember('var:compState', 'var:postObject', doc);
+						thisModule.genWIB('var:preObject', ev, doc);
 					}
 					
 					if(trans.source.oclIsTypeOf(UML!State) and trans.target.oclIsTypeOf(UML!State)){
@@ -290,16 +290,16 @@ rule transition2Document2 {
 						targetName <- trans.target.name;
 						
 						
-						thisModule.genEntity('var:source', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
-						thisModule.genU('var:source', ev, doc);
-						thisModule.hadMember('var:CompState', 'var:target', doc);
-						thisModule.genWIB('var:source', ev, doc);
+						thisModule.genEntity('var:preObject', 'exe:'+trans.source.name, 'exe:'+smdName, doc);
+						thisModule.genU('var:preObject', ev, doc);
+						thisModule.hadMember('var:compState', 'var:postObject', doc);
+						thisModule.genWIB('var:preObject', ev, doc);
 						
-						thisModule.genEntity('var:target', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
-						thisModule.genWGB('var:target', ev, doc);
-						thisModule.hadMember('var:CompState', 'var:target', doc);
+						thisModule.genEntity('var:postObject', 'exe:'+trans.target.name, 'exe:'+smdName, doc);
+						thisModule.genWGB('var:postObject', ev, doc);
+						thisModule.hadMember('var:compState', 'var:postObject', doc);
 						
-						thisModule.genWDF('var:source', 'var:target', doc);
+						thisModule.genWDF('var:preObject', 'var:postObject', doc);
 					}
 
 				}

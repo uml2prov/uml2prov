@@ -259,16 +259,16 @@ rule newAttributeEntity(doc: PROV!Document){
 	to
 		attName:  PROV!PAttribute (
 			key <- 'u2p:attributeName', 
-			value <- 'var:attName'
+			value <- 'var:attributeName'
 		),
 		attClass:  PROV!PAttribute (
-			key <- 'u2p:className', 
-			value <- 'var:attType'
+			key <- 'u2p:typeName', 
+			value <- 'var:attributeType'
 		),
 		en: PROV!Entity (
 			id <- 'var:attribute',
 			type <- 'u2p:Attribute',
-			value <- 'var:attValue',
+			value <- 'var:attributeValue',
 			anyAttribute <- attName,
 			anyAttribute <- attClass
 		)
@@ -281,7 +281,7 @@ rule newAttributeEntity(doc: PROV!Document){
 rule genEntityWithTypeAndValue(p: String,t: String, v: String, doc: PROV!Document){
 	to
 		class:  PROV!PAttribute (
-			key <- 'u2p:className', 
+			key <- 'u2p:typeName', 
 			value <- t
 		),
 		en: PROV!Entity (
@@ -314,7 +314,7 @@ rule genObjectEntityWithTypeAndValue(p: String,t: String, v: String, doc: PROV!D
 rule newInputEntity(doc:PROV!Document){
 	to
 		inputClass:  PROV!PAttribute (
-			key <- 'u2p:className', 
+			key <- 'u2p:typeName', 
 			value <- 'var:inputType'
 		),
 	
@@ -423,35 +423,50 @@ rule OperationAdd2DocumentRoot {
 	}
 	to
 		--Elements
-		---coll_old: PROV!Entity (
-		----	id <- 'var:coll_old'
-		---),
+		coll_new_attName:  PROV!PAttribute (
+			key <- 'u2p:attributeName', 
+			value <- 'var:modCollAttributeName'
+		),
+		coll_new_typeName:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:modCollAttributeType'
+		),
 		coll_new: PROV!Entity (
-			id <- 'var:coll_new',
-			type <- 'var:coll_newType',
-			type<- 'prov:Collection'
+			id <- 'var:modCollAttribute',
+			type <- 'u2p:Attribute',
+			value<- 'var:modCollAttributeValue', 
+			anyAttribute <- coll_new_attName,
+			anyAttribute <- coll_new_typeName
+		),
+		inp_type:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:inputType'
 		),
 		inp: PROV!Entity (
 			id <- 'var:input',
-			value <- 'var:inputValue'
+			value <- 'var:inputValue', 
+			anyAttribute <- inp_type
 		),
 		rem: PROV!Entity (
-			id <- 'var:collElements'
+			id <- 'var:collElement'
 		),
 		--remainder elements from coll1
 		ac: PROV!Activity (
 			id <- 'var:operation',
-			type <- 'exe:'+cl.name
+			type <- 'var:operationName'
 		),
 		source_state: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
+			id <- 'var:preObject',
 			type<- 'u2p:Object'
 		),
+		target_state_name:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:typeName'
+		),
 		target_state: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + cl.class.name,
-			type<-'u2p:Object'
+			id <- 'var:postObject',
+			type<-'u2p:Object',
+			anyAttribute <- target_state_name
 		),
 		doc: PROV!Document (
 			id <- cl.class.name + '_' + cl.name,
@@ -466,7 +481,6 @@ rule OperationAdd2DocumentRoot {
 	do {
 			if(cl.class.ownedAttribute.size() > 1){
 				thisModule.newAttributeEntity(doc);
-				---thisModule.genEntityWithTypeAndValue('var:attribute', 'var:attType','var:attValue', doc);
 				thisModule.hadMemberAttribute(target_state.id, 'var:attribute','', doc);	
 				thisModule.addTypeTo('prov:Collection', source_state);
 				thisModule.addTypeTo('prov:Collection', target_state);
@@ -483,7 +497,7 @@ rule OperationAdd2DocumentRoot {
 			---thisModule.genWDF(inp.id, coll_new.id, doc);
 			
 			thisModule.hadMember(target_state.id, coll_new.id, doc);	
-			thisModule.hadMember(coll_new.id, 'var:collElements', doc);	
+			thisModule.hadMember(coll_new.id, 'var:collElement', doc);	
 			thisModule.hadMember(coll_new.id, 'var:input', doc);	
 
 			
@@ -515,18 +529,27 @@ from
 		
 		att:  PROV!PAttribute (
 			key <- 'u2p:attributeName', 
-			value <- 'var:newAttrName'
+			value <- 'var:modifiedAttrName'
 		),
-		
+		att0:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:modifiedAttrType'
+		),
 		coll_new: PROV!Entity (
-			id <- 'var:newAttr',
+			id <- 'var:modifiedAttribute',
 			type <- 'u2p:Attribute',
-			value <- 'var:newAttrValue',
-			anyAttribute <- att
+			value <- 'var:modifiedAttrValue',
+			anyAttribute <- att,
+			anyAttribute <- att0
+		),
+		att3:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:inputType'
 		),
 		inp: PROV!Entity (
 			id <- 'var:input',
-			value <- 'var:inputValue'
+			value <- 'var:inputValue',
+			anyAttribute <- att3
 		),
 		--rem: PROV!Entity (
 		--	id <- 'var:oldAttr'
@@ -534,16 +557,24 @@ from
 		--remainder elements from coll1
 		ac: PROV!Activity (
 			id <- 'var:operation',
-			type <- 'exe:'+cl.name
+			type <- 'var:operationName'
+		),
+		att1:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:className'
 		),
 		source_state: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
-			type<- 'exe:Object'
+			id <- 'var:preObject',
+			type<- 'exe:Object',
+			anyAttribute<- att1
+		),
+		att2:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:className'
 		),
 		target_state: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + cl.class.name,
+			id <- 'var:postObject',
+			anyAttribute<- att2,
 			type<-'exe:Object'
 		),
 		doc: PROV!Document (
@@ -614,35 +645,50 @@ from
 	}
 	to
 		--Elements
-		---coll_old: PROV!Entity (
-		----	id <- 'var:coll_old'
-		---),
+		coll_new_attName:  PROV!PAttribute (
+			key <- 'u2p:attributeName', 
+			value <- 'var:modCollAttributeName'
+		),
+		coll_new_typeName:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:modCollAttributeType'
+		),
 		coll_new: PROV!Entity (
-			id <- 'var:coll_new',
-			type <- 'var:coll_newType',
-			type<- 'prov:Collection'
+			id <- 'var:modCollAttribute',
+			type <- 'u2p:Attribute',
+			value<- 'var:modCollAttributeValue', 
+			anyAttribute <- coll_new_attName,
+			anyAttribute <- coll_new_typeName
+		),
+		inp_type:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:inputType'
 		),
 		inp: PROV!Entity (
 			id <- 'var:input',
-			value <- 'var:inputValue'
+			value <- 'var:inputValue', 
+			anyAttribute <- inp_type
 		),
 		rem: PROV!Entity (
-			id <- 'var:collElements'
+			id <- 'var:collElement'
 		),
 		--remainder elements from coll1
 		ac: PROV!Activity (
 			id <- 'var:operation',
-			type <- 'exe:'+cl.name
+			type <- 'var:operationName'
 		),
 		source_state: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
-			type<- 'exe:Object'
+			id <- 'var:preObject',
+			type<- 'u2p:Object'
+		),
+		target_state_name:  PROV!PAttribute (
+			key <- 'u2p:typeName', 
+			value <- 'var:typeName'
 		),
 		target_state: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + cl.class.name,
-			type<-'exe:Object'
+			id <- 'var:postObject',
+			type<-'u2p:Object',
+			anyAttribute <- target_state_name
 		),
 		doc: PROV!Document (
 			id <- cl.class.name + '_' + cl.name,
@@ -657,7 +703,6 @@ from
 	do {
 			if(cl.class.ownedAttribute.size() > 1){
 				thisModule.newAttributeEntity(doc);
-				---thisModule.genEntityWithTypeAndValue('var:attribute', 'var:attType','var:attValue', doc);
 				thisModule.hadMemberAttribute(target_state.id, 'var:attribute','', doc);	
 				thisModule.addTypeTo('prov:Collection', source_state);
 				thisModule.addTypeTo('prov:Collection', target_state);
@@ -674,15 +719,16 @@ from
 			---thisModule.genWDF(inp.id, coll_new.id, doc);
 			
 			thisModule.hadMember(target_state.id, coll_new.id, doc);	
-			thisModule.hadMember(coll_new.id, 'var:collElements', doc);	
+			thisModule.hadMember(coll_new.id, 'var:collElement', doc);	
+			thisModule.genWDF(coll_new.id, 'var:input', doc);	
 
 			
 			--attributes
-		--thisModule.addAttributeTo('prov:type', 'var:object', target_state);
-		thisModule.documentRoot.document<-doc;		
-			
+			--thisModule.addAttributeTo('prov:type', 'var:object', target_state);
+			thisModule.documentRoot.document<-doc;		
 
 		}
+
 }
 
 
@@ -704,14 +750,12 @@ rule OperationSetter2Document {
 		--enSA: PROV!Entity (id <- 'var:sourceAttribute'),
 		--enSS: PROV!Entity (id <- 'var:sourceState'),
 		enSS: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
-			type<-'exe:Object'
+			id <- 'var:preObject',
+			type<- 'u2p:Object'
 		),
 		enTS: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + cl.class.name,
-			type<-'exe:Object'
+			id <- 'var:postObject',
+			type<- 'u2p:Object'
 		),
 		ac: PROV!Activity (
 			id <- 'var:operation'
@@ -744,7 +788,6 @@ rule OperationSetter2Document {
 			
 			if(cl.class.ownedAttribute.size() > 1){
 				thisModule.newAttributeEntity(doc);
-				---thisModule.genEntityWithTypeAndValue('var:attribute', 'var:attType','var:attValue', doc);
 				thisModule.hadMemberAttribute(enTS.id, 'var:attribute','', doc);	
 				thisModule.addTypeTo('prov:Collection', enTS);
 				thisModule.addTypeTo('prov:Collection', enSS);
@@ -772,19 +815,16 @@ rule OperationCommand2Document {
 		--Elements 
 		--enSS: PROV!Entity (id <- 'var:sourceState'),
 		enSS: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
-			type<- 'prov:Object',
-			type<- 'prov:Collection'
+			id <- 'var:preObject',
+			type<- 'u2p:Object'
 		),
 		enTS: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + cl.class.name,
-			type<- 'prov:Object',
-			type<- 'prov:Collection'
+			id <- 'var:postObject',
+			type<- 'u2p:Object'
 		),
 		ac: PROV!Activity (
-			id <- 'var:operation'
+			id <- 'var:operation',
+			type <- 'var:operationName'
 		),
 		doc: PROV!Document (
 			id <- cl.class.name + '_' + cl.name,
@@ -810,12 +850,11 @@ rule OperationCommand2Document {
 				}else if(ip.direction.toString() = 'out' or ip.direction.toString()='return'){
 					--thisModule.genEntityWithTypeAndValue('var:input','var:inputType', 'var:inputValue', doc);
 					--thisModule.genU_parameter('var:input', ac,doc);
-					thisModule.genEntity('var:messageReply', doc);
 					thisModule.genEntity('var:output', doc);
-					thisModule.genWGB('var:messageReply', ac, doc);
-					thisModule.hadMemberAttribute('var:messageReply', 'var:output', '', doc);	
+					thisModule.genWGB('var:output', ac, doc);
+					---thisModule.hadMemberAttribute('var:messageReply', 'var:output', '', doc);	
 					if(existIn){
-						thisModule.genWDF('var:input', 'var:messageReply', doc);
+						thisModule.genWDF('var:input', 'var:output', doc);
 					}
 				}
 			}			
@@ -847,15 +886,13 @@ rule OperationGetter2Document {
 		--Elements 
 		--enSA: PROV!Entity (id <- 'var:sourceAttribute'),
 		enTA: PROV!Entity (
-			id <- 'var:messageReply',
-			type <- 'u2p:MessageReply'
+			id <- 'var:response',
+			type <- 'u2p:Response'
 		),
 		--enSS: PROV!Entity (id <- 'var:sourceState'),
 		enSS: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
-			type<- 'u2p:Object',
-			type<- 'prov:Collection'
+			id <- 'var:preObject',
+			type<- 'u2p:Object'
 		),
 		ac: PROV!Activity (
 			id <- 'var:operation'
@@ -876,7 +913,7 @@ rule OperationGetter2Document {
 			if(not isIN and p.direction.toString() = 'in'){
 					thisModule.genEntityWithTypeAndValue('var:input','var:inputType', 'var:inputValue', doc);
 					thisModule.genU_parameter('var:input', ac,	doc);
-					thisModule.genWDF('var:input', 'var:messageReply', doc);
+					thisModule.genWDF('var:input', 'var:response', doc);
 					isIN<-true;
 			}
 			
@@ -886,8 +923,9 @@ rule OperationGetter2Document {
 				isOUT<-true;
 				
 				if(not cl.getTagValue('predicate','item').equals('noTagValue')){
-					thisModule.genEntity('var:targetAttribute', doc);
-					thisModule.genWDF('var:targetAttribute', 'output', doc);
+					thisModule.genEntity('var:sourceAttribute', doc);
+					thisModule.genWDF('var:sourceAttribute', 'var:output', doc);
+					thisModule.genWGB('var:output',ac, doc);
 				}
 			}
 		}
@@ -964,20 +1002,14 @@ from
 	}
 	to
 		enTargAtt: PROV!Entity (
-			id <- 'var:targetAttribute'
+			id <- 'var:sourceAttribute'
 		),
 		--Elements 
 		--enSA: PROV!Entity (id <- 'var:sourceAttribute'),
-		enTA: PROV!Entity (
-			id <- 'var:messageReply',
-			type <- 'exe:MessageReply'
-		),
 		--enSS: PROV!Entity (id <- 'var:sourceState'),
 		enSS: PROV!Entity (
-			id <- 'var:source',
-			type <- 'exe:' + cl.class.name,
-			type<- 'exe:Object',
-			type<- 'prov:Collection'
+			id <- 'var:preObject',
+			type<- 'u2p:Object'
 		),
 		ac: PROV!Activity (
 			id <- 'var:operation'
@@ -986,28 +1018,33 @@ from
 			id <- cl.class.name + '_' + cl.name,
 			activity <- ac,
 			entity <- enSS,
-			entity <- enTA, --entity <- enSS
+			--entity <- enTA, --entity <- enSS
 			entity <- enTargAtt
 		)
 	do {
 			  --thisModule.genWIB(enSA.id,ac,doc);
 		thisModule.genU_object(enSS.id, ac, doc);
-		thisModule.genWGB(enTA.id, ac, doc);
+		--thisModule.genWGB(enTA.id, ac, doc);
 		
 		
 		for (p in cl.ownedParameter) {
 			if(not isIN and p.direction.toString() = 'in'){
 					thisModule.genEntityWithTypeAndValue('var:input','var:inputType', 'var:inputValue', doc);
 					thisModule.genU_parameter('var:input', ac,	doc);
-					thisModule.genWDF('var:input', 'var:messageReply', doc);
+					--thisModule.genWDF('var:input', 'var:messageReply', doc);
 					
 					isIN<-true;
 			}
 			
 			if(not isOUT and (p.direction.toString() = 'return' or p.direction.toString() = 'out')){
 				thisModule.genEntityWithTypeAndValue('var:output', 'var:outputType','var:outputValue', doc);
-				thisModule.hadMember(enTA.id, 'var:output', doc);
-				thisModule.genWDF('var:targetAttribute', 'var:output', doc);
+				--thisModule.hadMember(enTA.id, 'var:output', doc);
+				thisModule.genWDF('var:sourceAttribute', 'var:output', doc);
+				thisModule.genWGB('var:output', ac , doc);
+				if(isIN){
+					thisModule.genWDF('var:output', 'var:input', doc);
+				}
+				
 				
 				isOUT<-true;
 			}
@@ -1029,8 +1066,7 @@ rule OperationCreate2Document {
 	}
 	to
 		targetEn: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + operation.class.name,
+			id <- 'var:postObject',
 			type<- 'u2p:Object'
 		),
 		operationAct: PROV!Activity (
@@ -1089,8 +1125,7 @@ rule OperationCreate22Document {
 	}
 	to
 		targetEn: PROV!Entity (
-			id <- 'var:target',
-			type <- 'exe:' + operation.class.name,
+			id <- 'var:postObject',
 			type<- 'u2p:Object'
 		),
 		operationAct: PROV!Activity (
@@ -1180,7 +1215,7 @@ rule Operation2Document {
  			id <- 'var:operation'
  		),
  		en: PROV!Entity (
- 			id <- 'var:source',
+ 			id <- 'var:preObject',
  			type<-'exe:Object',
 			type <- 'exe:' + cl.class.name
  		),
