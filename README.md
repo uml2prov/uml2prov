@@ -88,7 +88,7 @@ Optionally, the output directory, may be specified using option `-o`:
 The following command considers three listeners:
 
 ```sh
-java -jar uml2prov.jar -m examples/models/Stack.uml -i examples/listeners -l a.b.ListenerCSV,a.b.ListenerCSV2,a.b.ListenerCSV3
+java -jar uml2prov.jar -m examples/models/Stack.uml -i examples/listeners -l a.b.ListenerCSV,a.b.ListenerCSV2,a.b.ListenerJSON
 ```
 
 The execution of the command generates a new directory (called `./src-gen`), with the following content:

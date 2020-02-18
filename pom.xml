@@ -69,7 +69,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<classpathPrefix>libs/</classpathPrefix>
+							<classpathPrefix>uml2prov_lib/</classpathPrefix>
 							<mainClass>es.unirioja.uml2prov.Principal</mainClass>
 						</manifest>
 					</archive>
@@ -88,7 +88,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>
-								${project.build.directory}/libs
+								${project.build.directory}/uml2prov_lib
 							</outputDirectory>
 						</configuration>
 					</execution>
