@@ -1,186 +1,124 @@
 package es.unirioja.uml2prov.xtend;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Iterables;
 import es.unirioja.uml2prov.utilities.AspectConstructor;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.Iterator;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.uml2.uml.Model;
-import org.eclipse.uml2.uml.Namespace;
-import org.eclipse.uml2.uml.Operation;
-import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.Functions.Function1;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 
 @SuppressWarnings("all")
 public class AspectGenerator {
-  public final static String PATH_UML2PROV_BGM = "/es/unirioja/uml2prov/bgm";
+  public static final String PATH_UML2PROV_BGM = "/es/unirioja/uml2prov/bgm";
   
   public static void generateBGM(final String propertiesFile, final String[] interfaceImpl, final String outputDirectory) {
-    try {
-      ResourceSetImpl set = new ResourceSetImpl();
-      set.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
-      set.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, 
-        UMLResource.Factory.INSTANCE);
-      Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, 
-        UMLResource.Factory.INSTANCE);
-      Resource res = set.getResource(URI.createFileURI(propertiesFile), true);
-      new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect")).mkdirs();
-      new File((outputDirectory + "/dependencies")).mkdirs();
-      File _file = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/BGMEventInstrumenter.aj"));
-      PrintStream provenanceExtractorAJ = new PrintStream(_file);
-      provenanceExtractorAJ.println(AspectGenerator.parents(interfaceImpl));
-      Iterable<Model> _filter = Iterables.<Model>filter(res.getContents(), Model.class);
-      for (final Model element : _filter) {
-        {
-          provenanceExtractorAJ.println(AspectGenerator.parents(element, true));
-          provenanceExtractorAJ.println(AspectGenerator.news(element, true));
-          provenanceExtractorAJ.println(AspectGenerator.operations(element, true));
-          provenanceExtractorAJ.println();
-          provenanceExtractorAJ.println(AspectGenerator.beforeBlock(element));
-          provenanceExtractorAJ.println();
-          provenanceExtractorAJ.println(AspectGenerator.afterBlock(element));
-          provenanceExtractorAJ.println();
-          provenanceExtractorAJ.println(AspectGenerator.aroundBlock(element));
-        }
-      }
-      provenanceExtractorAJ.println(AspectConstructor.codeMethodsDeclarationAJ());
-      provenanceExtractorAJ.close();
-      File _file_1 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/UUID.java"));
-      PrintStream _printStream = new PrintStream(_file_1);
-      provenanceExtractorAJ = _printStream;
-      provenanceExtractorAJ.println(AspectConstructor.generateUUID());
-      provenanceExtractorAJ.close();
-      File _file_2 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/BGMEvent.java"));
-      PrintStream _printStream_1 = new PrintStream(_file_2);
-      provenanceExtractorAJ = _printStream_1;
-      provenanceExtractorAJ.println(AspectConstructor.generateBGMEvent());
-      provenanceExtractorAJ.close();
-      File _file_3 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/EventHelper.java"));
-      PrintStream _printStream_2 = new PrintStream(_file_3);
-      provenanceExtractorAJ = _printStream_2;
-      provenanceExtractorAJ.println(AspectConstructor.generateEventHelper());
-      provenanceExtractorAJ.close();
-      File _file_4 = new File(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/BGMEventListener.java"));
-      PrintStream _printStream_3 = new PrintStream(_file_4);
-      provenanceExtractorAJ = _printStream_3;
-      provenanceExtractorAJ.println(AspectConstructor.generateBGMEventListener());
-      provenanceExtractorAJ.close();
-      File _file_5 = new File((outputDirectory + "/dependencies/org.aspectj.runtime_1.9.2.201811011643.jar"));
-      FileOutputStream target = new FileOutputStream(_file_5);
-      AspectConstructor.copiar(AspectConstructor.getJarDependency(), target);
-      target.close();
-    } catch (Throwable _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
+    throw new Error("Unresolved compilation problems:"
+      + "\nModel cannot be resolved to a type."
+      + "\nResourceSetImpl cannot be resolved."
+      + "\nThe method or field UMLPackage is undefined"
+      + "\nThe method or field UMLPackage is undefined"
+      + "\nThe method or field UMLResource is undefined"
+      + "\nThe method or field UMLResource is undefined"
+      + "\nThe method or field Resource is undefined"
+      + "\nThe method or field UMLResource is undefined"
+      + "\nThe method or field UMLResource is undefined"
+      + "\nThe method or field URI is undefined"
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\nThe method parents(EObject, boolean) from the type AspectGenerator refers to the missing type EObject"
+      + "\nThe method news(EObject, boolean) from the type AspectGenerator refers to the missing type EObject"
+      + "\nThe method operations(EObject, boolean) from the type AspectGenerator refers to the missing type EObject"
+      + "\ngetPackageRegistry cannot be resolved"
+      + "\nput cannot be resolved"
+      + "\neNS_URI cannot be resolved"
+      + "\neINSTANCE cannot be resolved"
+      + "\ngetResourceFactoryRegistry cannot be resolved"
+      + "\ngetExtensionToFactoryMap cannot be resolved"
+      + "\nput cannot be resolved"
+      + "\nFILE_EXTENSION cannot be resolved"
+      + "\nFactory cannot be resolved"
+      + "\nINSTANCE cannot be resolved"
+      + "\nFactory cannot be resolved"
+      + "\nRegistry cannot be resolved"
+      + "\nINSTANCE cannot be resolved"
+      + "\ngetExtensionToFactoryMap cannot be resolved"
+      + "\nput cannot be resolved"
+      + "\nFILE_EXTENSION cannot be resolved"
+      + "\nFactory cannot be resolved"
+      + "\nINSTANCE cannot be resolved"
+      + "\ngetResource cannot be resolved"
+      + "\ncreateFileURI cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\ncontents cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\nbeforeBlock cannot be resolved"
+      + "\nafterBlock cannot be resolved"
+      + "\naroundBlock cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\n+ cannot be resolved");
   }
   
-  public static StringBuffer operations(final EObject root, final boolean searchForNestedNodes) {
-    int i = 0;
-    int j = 0;
-    StringBuffer result = new StringBuffer();
-    TreeIterator<EObject> iter = root.eAllContents();
-    while (iter.hasNext()) {
-      {
-        EObject obj = iter.next();
-        if ((obj instanceof org.eclipse.uml2.uml.Class)) {
-          int _compareTo = ((org.eclipse.uml2.uml.Class)obj).getClass().getCanonicalName().compareTo("org.eclipse.uml2.uml.internal.impl.ClassImpl");
-          boolean _equals = (_compareTo == 0);
-          if (_equals) {
-            boolean _isEmpty = ((org.eclipse.uml2.uml.Class)obj).getOperations().isEmpty();
-            boolean _not = (!_isEmpty);
-            if (_not) {
-              String _name = ((org.eclipse.uml2.uml.Class)obj).getName();
-              String _plus = ("pointcut captureOperations" + _name);
-              String _plus_1 = (_plus + "(): ");
-              result.append(_plus_1);
-              EList<Operation> _operations = ((org.eclipse.uml2.uml.Class)obj).getOperations();
-              for (final Operation operation : _operations) {
-                {
-                  CharSequence _Namespaces = AspectGenerator.Namespaces(((Namespace)obj));
-                  String _plus_2 = ("\tcall(* " + _Namespaces);
-                  String _plus_3 = (_plus_2 + ".");
-                  String _name_1 = operation.getName();
-                  String _plus_4 = (_plus_3 + _name_1);
-                  String _plus_5 = (_plus_4 + "(..))");
-                  result.append(_plus_5);
-                  boolean _equals_1 = IterableExtensions.<Operation>last(((org.eclipse.uml2.uml.Class)obj).getOperations()).equals(operation);
-                  boolean _not_1 = (!_equals_1);
-                  if (_not_1) {
-                    result.append(" || ");
-                  } else {
-                    result.append(";\n");
-                  }
-                }
-              }
-              iter.prune();
-            }
-          }
-        }
-      }
-    }
-    result.append(" ;");
-    return result;
+  public static StringBuffer operations(final /* EObject */Object root, final boolean searchForNestedNodes) {
+    throw new Error("Unresolved compilation problems:"
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\neAllContents cannot be resolved"
+      + "\nhasNext cannot be resolved"
+      + "\nnext cannot be resolved"
+      + "\nclass cannot be resolved"
+      + "\ncanonicalName cannot be resolved"
+      + "\ncompareTo cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\noperations cannot be resolved"
+      + "\nempty cannot be resolved"
+      + "\n! cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\noperations cannot be resolved"
+      + "\nNamespaces cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\noperations cannot be resolved"
+      + "\nlast cannot be resolved"
+      + "\nequals cannot be resolved"
+      + "\n! cannot be resolved"
+      + "\nprune cannot be resolved");
   }
   
-  public static StringBuffer aroundBlock(final EObject root) {
-    try {
-      StringBuffer result = new StringBuffer();
-      result.append("Object around(Identified targetIdentified): target(targetIdentified) &&  !execution(* *.getUUID()) && !execution(* *.setUUID()) && (");
-      result.append(AspectGenerator.pointCutsOperations(root, true));
-      result.append("){\n");
-      result.append(AspectConstructor.codeInsideAround());
-      result.append("}");
-      return result;
-    } catch (Throwable _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
+  public static StringBuffer aroundBlock(final /* EObject */Object root) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method pointCutsOperations(EObject, boolean) from the type AspectGenerator refers to the missing type EObject");
   }
   
-  public static StringBuffer pointCutsOperations(final EObject root, final boolean searchForNestedNodes) {
-    int i = 0;
-    int j = 0;
-    StringBuffer result = new StringBuffer();
-    final Function1<EObject, Boolean> _function = (EObject e) -> {
-      int _compareTo = e.getClass().getName().compareTo("org.eclipse.uml2.uml.internal.impl.ClassImpl");
-      return Boolean.valueOf((_compareTo == 0));
-    };
-    Iterator<EObject> iter = IteratorExtensions.<EObject>filter(root.eAllContents(), _function);
-    while (iter.hasNext()) {
-      {
-        EObject obj = iter.next();
-        if ((obj instanceof org.eclipse.uml2.uml.Class)) {
-          int _compareTo = ((org.eclipse.uml2.uml.Class)obj).getClass().getCanonicalName().compareTo("org.eclipse.uml2.uml.internal.impl.ClassImpl");
-          boolean _equals = (_compareTo == 0);
-          if (_equals) {
-            String _name = ((org.eclipse.uml2.uml.Class)obj).getName();
-            String _plus = ("captureOperations" + _name);
-            String _plus_1 = (_plus + "()");
-            result.append(_plus_1);
-            boolean _hasNext = iter.hasNext();
-            if (_hasNext) {
-              result.append(" || \n");
-            }
-          }
-        }
-      }
-    }
-    return result;
+  public static StringBuffer pointCutsOperations(final /* EObject */Object root, final boolean searchForNestedNodes) {
+    throw new Error("Unresolved compilation problems:"
+      + "\n+ cannot be resolved."
+      + "\neAllContents cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\nclass cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\ncompareTo cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nhasNext cannot be resolved"
+      + "\nnext cannot be resolved"
+      + "\nclass cannot be resolved"
+      + "\ncanonicalName cannot be resolved"
+      + "\ncompareTo cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\nhasNext cannot be resolved");
   }
   
-  public static StringBuffer beforeBlock(final EObject root) {
+  public static StringBuffer beforeBlock(final /* EObject */Object root) {
     try {
       StringBuffer result = new StringBuffer();
       result.append(
@@ -195,7 +133,7 @@ public class AspectGenerator {
     }
   }
   
-  public static StringBuffer afterBlock(final EObject root) {
+  public static StringBuffer afterBlock(final /* EObject */Object root) {
     try {
       StringBuffer result = new StringBuffer();
       result.append(
@@ -210,94 +148,51 @@ public class AspectGenerator {
     }
   }
   
-  public static StringBuffer news(final EObject root, final boolean searchForNestedNodes) {
-    int i = 0;
-    int j = 0;
-    StringBuffer result = new StringBuffer();
-    final Function1<EObject, Boolean> _function = (EObject e) -> {
-      int _compareTo = e.getClass().getName().compareTo("org.eclipse.uml2.uml.internal.impl.ClassImpl");
-      return Boolean.valueOf((_compareTo == 0));
-    };
-    Iterator<EObject> iter = IteratorExtensions.<EObject>filter(root.eAllContents(), _function);
-    result.append((("pointcut captureNews" + Integer.valueOf(j)) + "(): "));
-    while (iter.hasNext()) {
-      {
-        EObject obj = iter.next();
-        if ((obj instanceof org.eclipse.uml2.uml.Class)) {
-          CharSequence _Namespaces = AspectGenerator.Namespaces(((Namespace)obj));
-          String _plus = ("initialization(" + _Namespaces);
-          String _plus_1 = (_plus + ".new(..))");
-          result.append(_plus_1);
-          boolean _hasNext = iter.hasNext();
-          if (_hasNext) {
-            result.append(" || \n");
-          }
-        }
-      }
-    }
-    result.append(" ;\n");
-    return result;
+  public static StringBuffer news(final /* EObject */Object root, final boolean searchForNestedNodes) {
+    throw new Error("Unresolved compilation problems:"
+      + "\n+ cannot be resolved."
+      + "\n+ cannot be resolved."
+      + "\neAllContents cannot be resolved"
+      + "\nfilter cannot be resolved"
+      + "\nclass cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\ncompareTo cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\nhasNext cannot be resolved"
+      + "\nnext cannot be resolved"
+      + "\nNamespaces cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\nhasNext cannot be resolved");
   }
   
-  public static StringBuffer parents(final EObject root, final boolean searchForNestedNodes) {
-    StringBuffer result = new StringBuffer();
-    TreeIterator<EObject> iter = root.eAllContents();
-    while (iter.hasNext()) {
-      {
-        EObject obj = iter.next();
-        if ((obj instanceof org.eclipse.uml2.uml.Class)) {
-          int _compareTo = ((org.eclipse.uml2.uml.Class)obj).getClass().getCanonicalName().compareTo("org.eclipse.uml2.uml.internal.impl.ClassImpl");
-          boolean _equals = (_compareTo == 0);
-          if (_equals) {
-            CharSequence _Namespaces = AspectGenerator.Namespaces(((Namespace)obj));
-            String _plus = ("declare parents : " + _Namespaces);
-            String _plus_1 = (_plus + " implements Identified;\n");
-            result.append(_plus_1);
-            iter.prune();
-          }
-        }
-      }
-    }
-    return result;
+  public static StringBuffer parents(final /* EObject */Object root, final boolean searchForNestedNodes) {
+    throw new Error("Unresolved compilation problems:"
+      + "\n+ cannot be resolved."
+      + "\neAllContents cannot be resolved"
+      + "\nhasNext cannot be resolved"
+      + "\nnext cannot be resolved"
+      + "\nclass cannot be resolved"
+      + "\ncanonicalName cannot be resolved"
+      + "\ncompareTo cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nNamespaces cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\nprune cannot be resolved");
   }
   
-  public static Object getFirstNamespace(final Namespace cl) {
-    Object _xifexpression = null;
-    Namespace _namespace = cl.getNamespace();
-    boolean _equals = Objects.equal(_namespace, null);
-    if (_equals) {
-      return cl.getName();
-    } else {
-      _xifexpression = AspectGenerator.getFirstNamespace(cl.getNamespace());
-    }
-    return _xifexpression;
+  public static Object getFirstNamespace(final /* Namespace */Object cl) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method getFirstNamespace(Namespace) from the type AspectGenerator refers to the missing type Namespace"
+      + "\nnamespace cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nnamespace cannot be resolved");
   }
   
-  public static CharSequence Namespaces(final Namespace cl) {
+  public static CharSequence Namespaces(final /* Namespace */Object cl) {
     StringConcatenation _builder = new StringConcatenation();
-    {
-      Namespace _namespace = cl.getNamespace();
-      boolean _equals = Objects.equal(_namespace, null);
-      if (_equals) {
-      }
-    }
-    {
-      Namespace _namespace_1 = cl.getNamespace();
-      boolean _notEquals = (!Objects.equal(_namespace_1, null));
-      if (_notEquals) {
-        Object _Namespaces = AspectGenerator.Namespaces(cl.getNamespace());
-        _builder.append(_Namespaces);
-        {
-          Namespace _namespace_2 = cl.getNamespace().getNamespace();
-          boolean _notEquals_1 = (!Objects.equal(_namespace_2, null));
-          if (_notEquals_1) {
-            _builder.append(".");
-          }
-        }
-        String _name = cl.getName();
-        _builder.append(_name);
-      }
-    }
+    _builder.append("�IF cl.namespace==null��ENDIF��IF cl.namespace!=null��Namespaces(cl.namespace)��IF cl.namespace.namespace!=null�.�ENDIF��cl.name��ENDIF�");
     return _builder;
   }
   
@@ -346,10 +241,8 @@ public class AspectGenerator {
     _builder.newLine();
     _builder.append("import es.unirioja.uml2prov.bgm.BGMEventListener;");
     _builder.newLine();
-    _builder.append("//import ");
-    _builder.append(interfImp);
-    _builder.append(";");
-    _builder.newLineIfNotEmpty();
+    _builder.append("//import �interfImp�;");
+    _builder.newLine();
     _builder.newLine();
     _builder.append("public aspect BGMEventInstrumenter {");
     _builder.newLine();
@@ -740,15 +633,15 @@ public class AspectGenerator {
     _builder.append("\t");
     _builder.append("static {");
     _builder.newLine();
-    {
-      for(final String element : interfImp) {
-        _builder.append("\t\t");
-        _builder.append("bgmm.addListener(new ");
-        _builder.append(element, "\t\t");
-        _builder.append("());");
-        _builder.newLineIfNotEmpty();
-      }
-    }
+    _builder.append("\t\t");
+    _builder.append("�FOR element : interfImp�");
+    _builder.newLine();
+    _builder.append("\t\t\t");
+    _builder.append("bgmm.addListener(new �element�());");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("�ENDFOR� ");
+    _builder.newLine();
     _builder.append("\t\t");
     _builder.newLine();
     _builder.append("\t\t\t");

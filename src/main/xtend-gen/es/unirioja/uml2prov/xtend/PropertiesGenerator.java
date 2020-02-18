@@ -1,18 +1,6 @@
 package es.unirioja.uml2prov.xtend;
 
-import es.unirioja.uml2prov.xtend.AspectGenerator;
-import es.unirioja.uml2prov.xtend.properties.PropertiesPackage;
-import es.unirioja.uml2prov.xtend.properties.Property;
-import java.io.PrintStream;
-import java.util.Map;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.eclipse.xtext.xbase.lib.Exceptions;
 
 @SuppressWarnings("all")
 public class PropertiesGenerator {
@@ -53,54 +41,42 @@ public class PropertiesGenerator {
   
   public static CharSequence putMemory(final String name, final String value) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("propertiesMemory.put(\"");
-    _builder.append(name);
-    _builder.append("\", \"");
-    _builder.append(value);
-    _builder.append("\");");
-    _builder.newLineIfNotEmpty();
+    _builder.append("propertiesMemory.put(\"�name�\", \"�value�\");");
+    _builder.newLine();
     return _builder;
   }
   
   public static CharSequence putAttribyteMemory(final String name, final String value) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("propertiesMemoryAttributes.put(\"");
-    _builder.append(name);
-    _builder.append("\",Arrays.asList(\"");
-    _builder.append(value);
-    _builder.append("\".split(\"\\\\|\")));");
-    _builder.newLineIfNotEmpty();
+    _builder.append("propertiesMemoryAttributes.put(\"�name�\",Arrays.asList(\"�value�\".split(\"\\\\|\")));");
+    _builder.newLine();
     return _builder;
   }
   
   public static void generateProperties(final String propertiesFile, final String outputDirectory) {
-    try {
-      Map<String, Object> _extensionToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-      XMIResourceFactoryImpl _xMIResourceFactoryImpl = new XMIResourceFactoryImpl();
-      _extensionToFactoryMap.put("xmi", _xMIResourceFactoryImpl);
-      final ResourceSetImpl resourceSet = new ResourceSetImpl();
-      resourceSet.getPackageRegistry().put("http://www.w3.org/ns/properties", PropertiesPackage.eINSTANCE);
-      final Resource resource = resourceSet.getResource(URI.createURI(propertiesFile), true);
-      PrintStream propertiesPS = new PrintStream(((outputDirectory + AspectGenerator.PATH_UML2PROV_BGM) + "/aspect/LoadProperties.java"));
-      propertiesPS.println(PropertiesGenerator.inicio());
-      EList<EObject> _contents = resource.getContents();
-      for (final EObject documents : _contents) {
-        EList<EObject> _eContents = documents.eContents();
-        for (final EObject property : _eContents) {
-          if ((property instanceof Property)) {
-            boolean _contains = ((Property)property).getName().contains(".attributes");
-            if (_contains) {
-              propertiesPS.println(PropertiesGenerator.putAttribyteMemory(((Property)property).getName(), ((Property)property).getValue()));
-            } else {
-              propertiesPS.println(PropertiesGenerator.putMemory(((Property)property).getName(), ((Property)property).getValue()));
-            }
-          }
-        }
-      }
-      propertiesPS.println(PropertiesGenerator.fin());
-      propertiesPS.close();
-    } catch (Throwable _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method or field Resource is undefined"
+      + "\nXMIResourceFactoryImpl cannot be resolved."
+      + "\nResourceSetImpl cannot be resolved."
+      + "\nThe method or field URI is undefined"
+      + "\n+ cannot be resolved."
+      + "\nFactory cannot be resolved"
+      + "\nRegistry cannot be resolved"
+      + "\nINSTANCE cannot be resolved"
+      + "\nextensionToFactoryMap cannot be resolved"
+      + "\nput cannot be resolved"
+      + "\ngetPackageRegistry cannot be resolved"
+      + "\nput cannot be resolved"
+      + "\ngetResource cannot be resolved"
+      + "\ncreateURI cannot be resolved"
+      + "\n+ cannot be resolved"
+      + "\ncontents cannot be resolved"
+      + "\neContents cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\ncontains cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nvalue cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nvalue cannot be resolved");
   }
 }
